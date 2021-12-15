@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Document;
+namespace App\Controller;
 
 
+use App\Document\Gebruiker;
+use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 
 class TestController extends Controller\AbstractController
 {
