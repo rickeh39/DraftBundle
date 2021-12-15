@@ -73,6 +73,23 @@
     "doctrine/migrations": {
         "version": "3.3.2"
     },
+    "doctrine/mongodb-odm": {
+        "version": "2.3.0"
+    },
+    "doctrine/mongodb-odm-bundle": {
+        "version": "4.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "1fd8598bf42227a1c8905edd32f640e4c5d15eff"
+        },
+        "files": [
+            "./config/packages/doctrine_mongodb.yaml",
+            "./config/packages/prod/doctrine_mongodb.yaml",
+            "./src/Document/.gitignore"
+        ]
+    },
     "doctrine/orm": {
         "version": "2.10.3"
     },
@@ -88,14 +105,53 @@
     "friendsofphp/proxy-manager-lts": {
         "version": "v1.0.5"
     },
+    "illuminate/bus": {
+        "version": "v8.75.0"
+    },
+    "illuminate/collections": {
+        "version": "v8.75.0"
+    },
+    "illuminate/container": {
+        "version": "v8.75.0"
+    },
+    "illuminate/contracts": {
+        "version": "v8.75.0"
+    },
+    "illuminate/database": {
+        "version": "v8.75.0"
+    },
+    "illuminate/events": {
+        "version": "v8.75.0"
+    },
+    "illuminate/macroable": {
+        "version": "v8.75.0"
+    },
+    "illuminate/pipeline": {
+        "version": "v8.75.0"
+    },
+    "illuminate/support": {
+        "version": "v8.75.0"
+    },
+    "jean85/pretty-package-versions": {
+        "version": "2.0.5"
+    },
+    "jenssegers/mongodb": {
+        "version": "3.8.4"
+    },
     "laminas/laminas-code": {
         "version": "4.5.0"
+    },
+    "mongodb/mongodb": {
+        "version": "1.10.1"
     },
     "monolog/monolog": {
         "version": "2.3.5"
     },
     "myclabs/deep-copy": {
         "version": "1.10.2"
+    },
+    "nesbot/carbon": {
+        "version": "2.55.2"
     },
     "nikic/php-parser": {
         "version": "v4.13.2"
@@ -164,6 +220,9 @@
     },
     "psr/log": {
         "version": "2.0.0"
+    },
+    "psr/simple-cache": {
+        "version": "1.0.1"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
@@ -613,6 +672,9 @@
     },
     "twig/twig": {
         "version": "v3.3.4"
+    },
+    "voku/portable-ascii": {
+        "version": "1.5.6"
     },
     "webmozart/assert": {
         "version": "1.10.0"
