@@ -23,8 +23,7 @@ class ArticleController extends AbstractController
     public function index(ManagerRegistry $managerRegistry)
     {
         $dm = $managerRegistry->getManager();
-        $articles = $dm->getRepository(Article::class)->findAll(); if (!$articles) { throw $this->createNotFoundException('No product found for id ' . 1); }
-//        dd($article);
+        $articles = $dm->getRepository(Article::class)->findAll();
         return $this->render('article/index.html.twig', ['articles' => $articles]);
     }
 
@@ -52,5 +51,15 @@ class ArticleController extends AbstractController
         return $this->renderForm('article/new.html.twig', [
             'form' => $form,
         ]);
+    }
+
+    /**
+     * @Route("/{id}", name="article_read")
+     */
+    public function read(ManagerRegistry $managerRegistry, $id)
+    {
+        $dm = $managerRegistry->getManager();
+        $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]); if (!$article) { throw $this->createNotFoundException('No product found for id ' . 1); }
+        return $this->render('article/read.html.twig', ['article' => $article]);
     }
 }
