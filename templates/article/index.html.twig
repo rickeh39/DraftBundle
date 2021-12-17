@@ -16,9 +16,9 @@
     <ul>
         
         {% for art in articles %}
-            <li><a href="{{ path('article_read',{'id': art.id}) }}">{{ art.title }}</a></li>
+            <li><a href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
         {% endfor %}
-        <a href="{{ path('article_new') }}">Nieuw artikel toevoegen</a>
+        <a href="{{ path('draft_new') }}">Nieuwe draft toevoegen</a>
     </ul>
 </div>
 {% endblock %}

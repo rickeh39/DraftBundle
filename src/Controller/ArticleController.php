@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\Article;
 use App\Form\Type\ArticleType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,38 +29,11 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="article_new")
-     * @Method("POST")
+     * @Route("/{id}", name="article_show")
      */
-    public function new(ManagerRegistry $managerRegistry, Request $request)
+    public function show(DocumentManager $documentManager, $id)
     {
-        $article = new Article();
-        $article->setUser(1);
-        $dm = $managerRegistry->getManager();
-
-        $form = $this->createForm(ArticleType::class, $article);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $task = $form->getData();
-            $dm->persist($task);
-            $dm->flush();
-
-            return $this->redirectToRoute('task_success');
-        }
-
-        //do something
-        return $this->renderForm('article/new.html.twig', [
-            'form' => $form,
-        ]);
-    }
-
-    /**
-     * @Route("/{id}", name="article_read")
-     */
-    public function read(ManagerRegistry $managerRegistry, $id)
-    {
-        $dm = $managerRegistry->getManager();
-        $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]); if (!$article) { throw $this->createNotFoundException('No product found for id ' . 1); }
-        return $this->render('article/read.html.twig', ['article' => $article]);
+        $article = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        return $this->render('article/show.html.twig', ['article' => $article]);
     }
 }

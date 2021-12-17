@@ -2,6 +2,7 @@
 namespace App\Form\Type;
 
 use App\Document\Article;
+use App\Document\Content;
 use Doctrine\ODM\MongoDB\Types\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -32,7 +33,7 @@ class ArticleType extends \Symfony\Component\Form\AbstractType {
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Article::class,
+            'data_class' => Content::class,
         ]);
     }
 }

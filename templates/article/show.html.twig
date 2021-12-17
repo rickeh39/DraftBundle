@@ -9,7 +9,7 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ article.title}} ✅</h1>
+    <h1>Hello {{ article.title }} ✅</h1>
 
 
     Dit zijn al je gegevens
@@ -19,5 +19,7 @@
         <li>{{ article.content }}</li>
         <li>{{ article.user }}</li>
     </ul>
+
+    <a href="{{ path('draft_edit',{'id': article.id}) }}">{{ article.title }} bewerken</a>
 </div>
 {% endblock %}
