@@ -10,3 +10,6 @@ import './styles/app.css';
 
 // start the Stimulus application
 import './bootstrap';
+
+//import the editor (zo, genoeg gewerkt voor vandaag gr sean).
+require('tinymce');
