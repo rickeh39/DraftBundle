@@ -70,7 +70,7 @@ class DraftController extends AbstractController
      */
     public function edit(DocumentManager $documentManager,Request $request, $id)
     {
-        $draft = $documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $draft = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
 
         $form = $this->createForm(ArticleType::class, $draft);
         $form->handleRequest($request);
@@ -90,10 +90,21 @@ class DraftController extends AbstractController
     /**
      * @Route("/{id}/publish", name="draft_publish")
      */
-    public function publish(DocumentManager $documentManager, Request $request, $id)
+    public function publish(ManagerRegistry $managerRegistry,$id)
     {
+        $dm = $managerRegistry->getManager();
         $article = new Article;
-        $article = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
-        dd($article);
+        $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+
+        $article->setTitle($draft->getTitle());
+        $article->setContent($draft->getContent());
+        $article->setDescription($draft->getDescription());
+        $article->setUser($draft->getUser());
+
+        $dm->persist($article);
+        $dm->remove($draft);
+        $dm->flush();
+
+        return $this->redirectToRoute('article_index');
     }
 }
