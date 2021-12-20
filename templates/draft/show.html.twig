@@ -21,6 +21,6 @@
         </ul>
 
         <a href="{{ path('draft_edit',{'id': draft.id}) }}">{{ draft.title }} bewerken</a>
-        <a href="{{ path('draft_publish',{'id': draft.id}) }}">Publiseren</a>
+        <a href="{{ path('draft_publish',{'id': draft.id}) }}" class="btn btn-primary">Publiceren</a>
     </div>
 {% endblock %}

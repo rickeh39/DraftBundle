@@ -70,16 +70,17 @@ class DraftController extends AbstractController
      */
     public function edit(DocumentManager $documentManager,Request $request, $id)
     {
-        $draft = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $article = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        if($article->getDraft() == null) $this->articleToDraft($article);
 
-        $form = $this->createForm(ArticleType::class, $draft);
+        $form = $this->createForm(ArticleType::class, $article->getDraft());
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $task = $form->getData();
             $documentManager->persist($task);
             $documentManager->flush();
             $this->addFlash('success', "De draft is bijgewerkt");
-            return $this->redirectToRoute('draft_show', ['id' => $draft->getId()]);
+            return $this->redirectToRoute('draft_show', ['id' => $task->getId()]);
         }
 
         return $this->renderForm('draft/new.html.twig', [
@@ -93,18 +94,35 @@ class DraftController extends AbstractController
     public function publish(ManagerRegistry $managerRegistry,$id)
     {
         $dm = $managerRegistry->getManager();
-        $article = new Article;
         $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $article= $dm->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
+        if($article == null) $article = new Article;
 
+        //TODO Er moet automatisch nog een nieuwe versie gegenereerd worden op het moment van publiceren
         $article->setTitle($draft->getTitle());
         $article->setContent($draft->getContent());
         $article->setDescription($draft->getDescription());
         $article->setUser($draft->getUser());
+        $article->setDraft(null);
 
         $dm->persist($article);
         $dm->remove($draft);
         $dm->flush();
 
         return $this->redirectToRoute('article_index');
+    }
+
+    /**
+     * @param Article $article
+     */
+    private function articleToDraft(Article $article){
+        $draft = new Draft;
+        $draft->setUser($article->getUser());
+        $draft->setDescription($article->getDescription());
+        $draft->setContent($article->getContent());
+        $draft->setTitle($article->getTitle());
+        $draft->setId($article->getId());
+        $draft->setArticle($article);
+        $article->setDraft($draft);
     }
 }

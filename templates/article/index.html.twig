@@ -16,7 +16,11 @@
     <ul>
         
         {% for art in articles %}
-            <li><a href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
+            {% if(art.draft) %}
+                <li><a class="has-draft" href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
+            {% else %}
+                <li><a href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
+            {% endif %}
         {% endfor %}
         <a href="{{ path('draft_new') }}">Nieuwe draft toevoegen</a>
     </ul>
