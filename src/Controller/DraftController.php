@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Document\Article;
 use App\Document\Draft;
+use App\Document\Version;
 use App\Form\Type\ArticleType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -97,6 +99,9 @@ class DraftController extends AbstractController
         $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         $article= $dm->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
         if($article == null) $article = new Article;
+        $version = new Version;
+        $version->setContent($draft->getContent());
+        $article->addVersion($version);
 
         //TODO Er moet automatisch nog een nieuwe versie gegenereerd worden op het moment van publiceren
         $article->setTitle($draft->getTitle());
@@ -105,6 +110,7 @@ class DraftController extends AbstractController
         $article->setUser($draft->getUser());
         $article->setDraft(null);
 
+        $dm->persist($version);
         $dm->persist($article);
         $dm->remove($draft);
         $dm->flush();

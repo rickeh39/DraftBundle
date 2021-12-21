@@ -2,7 +2,12 @@
 
 namespace App\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use App\Document\Version;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use MongoDB\Collection;
+
 /**
  * @MongoDB\Document
  */
@@ -10,6 +15,13 @@ class Article extends Content
 {
     /** @MongoDB\ReferenceOne(targetDocument=Draft::class) */
     protected $draft;
+
+    /** @MongoDB\ReferenceMany(targetDocument=Version::class)*/
+    protected $versions;
+
+    public function __construct(){
+        $this->versions = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -25,5 +37,20 @@ class Article extends Content
     public function setDraft($draft): void
     {
         $this->draft = $draft;
+    }
+
+    /**
+     * @return PersistentCollection
+     */
+    public function getVersions(): PersistentCollection
+    {
+        return $this->versions;
+    }
+
+    public function addVersion(Version $version){
+        if($this->versions->contains($version)){
+            return;
+        }
+        $this->versions->add($version);
     }
 }
