@@ -9,7 +9,7 @@
     <h3>Dit bevat het artikel:</h3>
     <ul>
         <li><b>Beschrijving:</b> {{ article.description }}</li>
-        <li><b>Content:</b> {{ article.content }}</li>
+        <li><b>Content:</b> {{ article.content | raw }}</li>
         <li><b>Gebruiker:</b> {{ article.user }}</li>
     </ul>
 
