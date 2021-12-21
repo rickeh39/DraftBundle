@@ -39,48 +39,6 @@ class ArticleController extends AbstractController
         return $this->render('article/show.html.twig', ['article' => $article]);
     }
 
-
-    /**
-     * @Route("/autosave/{id}", name="article_autosave")
-     * @Method("PUT")
-     */
-    public function autosave($id, ManagerRegistry $managerRegistry, Request $request)
-    {
-        $dm = $managerRegistry->getManager();
-        $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]);
-
-        $data = json_decode($request->getContent(), true);
-
-        $article->setTitle($data['title']);
-        $article->setDescription($data['description']);
-        $article->setContent($data['content']);
-
-        $dm->persist($article);
-        $dm->flush();
-        return new JsonResponse(['data'=>$data]);
-    }
-
-    /**
-     * @Route("/firstautosave", name="article_autosave_first")
-     * @Method("PUT")
-     */
-    public function autosaveFirst(ManagerRegistry $managerRegistry, Request $request)
-    {
-        $article = new Article();
-        $article->setUser(1);
-        $dm = $managerRegistry->getManager();
-
-        $data = json_decode($request->getContent(), true);
-
-        $article->setTitle($data['title']);
-        $article->setDescription($data['description']);
-        $article->setContent($data['content']);
-
-        $dm->persist($article);
-        $dm->flush();
-        return new JsonResponse(['newArticleId'=>$article->getId()]);
-    }
-
     /**
      * @Route("/{articleId}/{versionId}", name="article_version")
      */

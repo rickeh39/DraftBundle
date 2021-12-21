@@ -15,18 +15,18 @@ class ArticleType extends AbstractType {
         $builder
             ->add('title', TextType::class,[
                 'label' => 'Titel',
-                'attr' => ['data-article-type' => 'title']
+                'attr' => ['data-draft-type' => 'title']
             ])
             ->add('description', TextType::class,[
                 'label' => 'Omschrijving',
-                'attr' => ['data-article-type' => 'description']
+                'attr' => ['data-draft-type' => 'description']
             ])
             ->add('content', TextareaType::class, [
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 10,
                     'style' => 'width: 100%',
-                    'data-article-type' => 'content'
+                    'data-draft-type' => 'content'
                 ],
             ])
             ->add('save', SubmitType::class, [
