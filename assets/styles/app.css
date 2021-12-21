@@ -2,6 +2,36 @@ body {
     background-color: lightgray;
 }
 
+button {
+    background-color: midnightblue;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
 .has-draft {
-    color: orange;
+    color: darkred;
+}
+
+.example-wrapper {
+    margin: 1em auto;
+    max-width: 800px;
+    width: 95%;
+    font: 18px/1.5 sans-serif;
+}
+
+.example-wrapper code {
+    background: #F5F5F5;
+    padding: 2px 6px;
+}
+
+.article {
+    margin-bottom: 2em;
+    border: 1px solid;
+    padding: 10px;
+    background-color: whitesmoke;
 }

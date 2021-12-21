@@ -32,7 +32,7 @@ abstract class Content
     /**
      * @MongoDB\Field(type="date")
      */
-    protected $create_date;
+    protected $createDate;
 
     /**
      * @MongoDB\Field(type="integer")
@@ -108,15 +108,15 @@ abstract class Content
      */
     public function getCreateDate()
     {
-        return $this->create_date;
+        return $this->createDate;
     }
 
     /**
-     * @param mixed $create_date
+     * @param mixed $createDate
      */
-    public function setCreateDate($create_date): void
+    public function setCreateDate($createDate): void
     {
-        $this->create_date = $create_date;
+        $this->createDate = $createDate;
     }
 
     /**
