@@ -24,7 +24,7 @@
 
     <ul>
         {% for version in article.versions %}
-            <li>{{ version.versionDate | date('d-m-y H:m:s') }}</li>
+            <li><a href="{{ path('article_version',{'articleId': article.id, 'versionId': version.id}) }}">{{ version.versionDate | date('d-m-y H:m:s') }}</a></li>
         {% endfor %}
     </ul>
 </div>

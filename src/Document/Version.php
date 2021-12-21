@@ -46,12 +46,12 @@ class Version {
 
     public function getVersionDate()
     {
-        return $this->version_date;
+        return $this->versionDate;
     }
 
-    public function setVersionDate($version_date): void
+    public function setVersionDate($versionDate): void
     {
-        $this->version_date = $version_date;
+        $this->versionDate = $versionDate;
     }
 
     /**
