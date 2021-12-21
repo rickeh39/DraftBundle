@@ -30,9 +30,9 @@ class ArticleType extends AbstractType {
                 ],
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Opslaan',
+                'label' => 'Opslaan als artikel',
                 'attr' => [
-                    'class' => 'btn btn-lg btn-success btn-block'
+                    'class' => 'btn bg-primary mt-3'
                 ]
             ]);
     }

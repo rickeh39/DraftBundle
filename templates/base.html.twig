@@ -3,6 +3,14 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
+
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
+              integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;700&display=swap" rel="stylesheet">
+
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -13,6 +21,61 @@
         {% endblock %}
     </head>
     <body>
+        <nav class="navbar navbar-expand-lg navbar-light" style="min-height: 80px">
+            <div class="container-fluid">
+                <a class="navbar-brand color-primary" href="#">Integrated</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('draft_index') }}">Draft</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('article_index') }}">Artiekelen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Versiebeheer</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
         {% block body %}{% endblock %}
+
+
+        <svg id="visual" class="w-100" viewBox="0 0 900 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+            <path d="M0 80L16.7 80.5C33.3 81 66.7 82 100 87.7C133.3 93.3 166.7 103.7 200 107.8C233.3 112 266.7 110 300 96.7C333.3 83.3 366.7 58.7 400 57.5C433.3 56.3 466.7 78.7 500 89.3C533.3 100 566.7 99 600 91.7C633.3 84.3 666.7 70.7 700 63C733.3 55.3 766.7 53.7 800 55.2C833.3 56.7 866.7 61.3 883.3 63.7L900 66L900 151L883.3 151C866.7 151 833.3 151 800 151C766.7 151 733.3 151 700 151C666.7 151 633.3 151 600 151C566.7 151 533.3 151 500 151C466.7 151 433.3 151 400 151C366.7 151 333.3 151 300 151C266.7 151 233.3 151 200 151C166.7 151 133.3 151 100 151C66.7 151 33.3 151 16.7 151L0 151Z" fill="#72BFEE" stroke-linecap="round" stroke-linejoin="miter">
+            </path>
+        </svg>
+        <footer class="text-center text-white bg-secondary">
+            <div class="container">
+                <section class="mb-5">
+                    <a class="btn btn-link btn-floating btn-lg text-white m-1" href="#!" role="button">
+                        <i class="fab fa-facebook-f fs-3"></i>
+                    </a>
+                    <a class="btn btn-link btn-floating btn-lg text-white m-1" href="#!" role="button">
+                        <i class="fab fa-twitter fs-3"></i>
+                    </a>
+                    <a class="btn btn-link btn-floating btn-lg text-white m-1" href="#!" role="button">
+                        <i class="fab fa-google fs-3"></i>
+                    </a>
+                    <a class="btn btn-link btn-floating btn-lg text-white m-1" href="#!" role="button">
+                        <i class="fab fa-linkedin fs-3"></i>
+                    </a>
+                    <a class="btn btn-link btn-floating btn-lg text-white m-1" href="#!" role="button">
+                        <i class="fab fa-github fs-3"></i>
+                    </a>
+                </section>
+            </div>
+
+            <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+                © 2021 Copyright |
+                <a class="text-white fw-bold text-decoration-none" href="https://integratedfordevelopers.com/">integrated.com</a>
+            </div>
+        </footer>
+
     </body>
 </html>
