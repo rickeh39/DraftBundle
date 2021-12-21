@@ -3,4 +3,73 @@
 
     {{ form(form) }}
 
+    <script>
+        let article_id =
+                {% if article.id is defined %}
+                    {{ article.id }}
+                {% else %}
+                    '';
+                {% endif %}
+        console.log(article_id);
+
+        function digestForm() {
+            let jsonObj = {
+
+            };
+
+            let elements = document.querySelectorAll('[data-article-type]');
+            for (let i =0; i<elements.length; i++){
+                jsonObj[elements[i].getAttribute('data-article-type')]=elements[i].value;
+            }
+            console.log(jsonObj);
+            return jsonObj;
+        }
+
+        function autosaveDraft(content) {
+            let data = digestForm();
+            data.content = content;
+
+            let options = {
+                method: 'put',
+                mode: 'cors',
+                headers: {
+                    'X-CSRF-TOKEN': document.getElementById('article__token').value,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            let urlExtra = article_id.length!==0 ? 'autosave/'+article_id : 'firstautosave';
+
+            fetch('/article/'+urlExtra, options).then(function (response){
+                console.log(response);
+                response.json().then(function (jsonResponse) {
+                    console.log(jsonResponse);
+                    article_id = jsonResponse.newArticleId;
+                })
+            });
+        }
+
+
+        let editorChangeHandlerId;
+        document.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: 'textarea#article_content',
+                height: 500,
+                skin: false,
+                content_css: false,
+                plugins: 'advlist code emoticons link lists table wordcount',
+                toolbar: 'bold italic | bullist numlist | link emoticons',
+                setup: function(editor) {
+                    editor.on('Paste Change input Undo Redo', function () {
+                        clearTimeout(editorChangeHandlerId);
+                        editorChangeHandlerId = setTimeout(function() {
+                            autosaveDraft(editor.getContent())
+                        }, 1000);
+                    });
+                }
+            });
+        });
+    </script>
+
 {% endblock %}

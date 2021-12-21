@@ -12,4 +12,16 @@ import './styles/app.css';
 import './bootstrap';
 
 //import the editor (zo, genoeg gewerkt voor vandaag gr sean).
-require('tinymce');
+require('tinymce/tinymce');
+require('tinymce/icons/default');
+require('tinymce/themes/silver');
+require('tinymce/skins/ui/oxide/skin.css');
+
+require('tinymce/plugins/advlist');
+require('tinymce/plugins/code');
+require('tinymce/plugins/emoticons');
+require('tinymce/plugins/emoticons/js/emojis');
+require('tinymce/plugins/link');
+require('tinymce/plugins/lists');
+require('tinymce/plugins/table');
+require('tinymce/plugins/wordcount');
