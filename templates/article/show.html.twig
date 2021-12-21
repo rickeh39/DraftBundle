@@ -9,19 +9,18 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ article.title }} ✅</h1>
+    <h1>Je bekijkt nu het volgende artikel: '{{ article.title }}' </h1>
 
-
-    Dit zijn al je gegevens
+    <h3>Dit bevat het artikel:</h3>
     <ul>
-        
-        <li>{{ article.description }}</li>
-        <li>{{ article.content }}</li>
-        <li>{{ article.user }}</li>
+        <li><b>Beschrijving:</b> {{ article.description }}</li>
+        <li><b>Content:</b> {{ article.content }}</li>
+        <li><b>Gebruiker:</b> {{ article.user }}</li>
     </ul>
 
-    <a href="{{ path('draft_edit',{'id': article.id}) }}">{{ article.title }} bewerken</a>
+    <a href="{{ path('draft_edit',{'id': article.id}) }}">Bewerken</a>
 
+    <h3>Het artikel bevat de volgende versies:</h3>
     <ul>
         {% for version in article.versions %}
             <li><a href="{{ path('article_version',{'articleId': article.id, 'versionId': version.id}) }}">{{ version.versionDate | date('d-m-y H:m:s') }}</a></li>

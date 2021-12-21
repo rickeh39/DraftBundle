@@ -9,20 +9,17 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello Articles! ✅</h1>
+    <h1>Dit is een overzicht met artikelen:</h1>
 
-
-    This friendly message is coming from:
     <ul>
-        
-        {% for art in articles %}
-            {% if(art.draft) %}
-                <li><a class="has-draft" href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
+        {% for article in articles %}
+            {% if(article.draft) %}
+                <li><a class="has-draft" href="{{ path('article_show',{'id': article.id}) }}">{{ article.title }}</a></li>
             {% else %}
-                <li><a href="{{ path('article_show',{'id': art.id}) }}">{{ art.title }}</a></li>
+                <li><a href="{{ path('article_show',{'id': article.id}) }}">{{ article.title }}</a></li>
             {% endif %}
         {% endfor %}
-        <a href="{{ path('draft_new') }}">Nieuwe draft toevoegen</a>
     </ul>
+    <a href="{{ path('draft_new') }}">Nieuwe draft toevoegen</a>
 </div>
 {% endblock %}

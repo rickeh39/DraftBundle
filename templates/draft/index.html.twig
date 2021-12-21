@@ -9,12 +9,9 @@
     </style>
 
     <div class="example-wrapper">
-        <h1>Hello drafts! ✅</h1>
+        <h1>Overzicht van alle bestaande drafts:</h1>
 
-
-        This friendly message is coming from:
         <ul>
-
             {% for draft in drafts %}
                 <li><a href="{{ path('draft_show',{'id': draft.id}) }}">{{ draft.title }}</a></li>
             {% endfor %}

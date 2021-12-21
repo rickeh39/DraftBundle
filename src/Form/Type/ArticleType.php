@@ -14,8 +14,12 @@ class ArticleType extends \Symfony\Component\Form\AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class)
-            ->add('description', TextType::class)
+            ->add('title', TextType::class,[
+                'label' => 'Titel'
+            ])
+            ->add('description', TextType::class,[
+                'label' => 'Omschrijving'
+            ])
             ->add('content', TextareaType::class, [
                 'attr' => [
                     'class' => 'tinymce',
@@ -24,6 +28,7 @@ class ArticleType extends \Symfony\Component\Form\AbstractType {
                 ],
             ])
             ->add('save', SubmitType::class, [
+                'label' => 'Opslaan',
                 'attr' => [
                     'class' => 'btn btn-lg btn-success btn-block'
                 ]

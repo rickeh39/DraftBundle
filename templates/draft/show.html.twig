@@ -9,18 +9,16 @@
     </style>
 
     <div class="example-wrapper">
-        <h1>Hello {{ draft.title }} ✅</h1>
+        <h1>Je bekijkt nu de volgende draft: '{{ draft.title }}' </h1>
 
-
-        Dit zijn al je gegevens
+        <h3>Dit bevat de draft:</h3>
         <ul>
-
-            <li>{{ draft.description }}</li>
-            <li>{{ draft.content }}</li>
-            <li>{{ draft.user }}</li>
+            <li><b>Beschrijving:</b> {{ draft.description }}</li>
+            <li><b>Content:</b> {{ draft.content }}</li>
+            <li><b>Gebruiker:</b> {{ draft.user }}</li>
         </ul>
 
-        <a href="{{ path('draft_edit',{'id': draft.id}) }}">{{ draft.title }} bewerken</a>
+        <a href="{{ path('draft_edit',{'id': draft.id}) }}">Bewerken</a>
         <a href="{{ path('draft_publish',{'id': draft.id}) }}" class="btn btn-primary">Publiceren</a>
     </div>
 {% endblock %}

@@ -9,28 +9,25 @@
     </style>
 
     <div class="example-wrapper">
-        <h1>Title Article: {{ article.title }}, versie: {{ version.versionDate | date('d-m-y H:m:s') }} ✅</h1>
+        <h1>Titel van het artikel: {{ article.title }}</h1>
 
-        {#{{ dump(article.versions|length) }}#}
         {% if article.versions[0] != version %}
-            Content vorige versie:
+            Vorige versie:
             <ul>
                 {% for art_version in article.versions %}
                     {% if art_version.versionDate == version.versionDate %}
-                        <li> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-y H:m:s') }}</li>
-                        <li> {{ article.versions[(loop.index - 2)].content }}</li>
+                        <li> <b>Datum & tijd:</b> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-y H:m:s') }}</li>
+                        <li> <b>Content:</b> {{ article.versions[(loop.index - 2)].content }}</li>
                     {% endif %}
                 {% endfor %}
             </ul>
 
-
-        Nieuwste content:
+            Nieuwste versie:
         {% endif %}
         <ul>
-            <li>Datum & tijd: {{ version.versionDate | date('d-m-y H:m:s') }}</li>
-            <li>Content: {{ version.content }}</li>
+            <li> <b>Datum & tijd:</b> {{ version.versionDate | date('d-m-y H:m:s') }}</li>
+            <li> <b>Content:</b> {{ version.content }}</li>
         </ul>
-
 
     </div>
 {% endblock %}
