@@ -1,7 +1,77 @@
 {% extends 'base.html.twig' %}
 {% block body %}
+
     <div class="example-wrapper">
         <h1>Het creëeren van een nieuwe draft</h1>
         {{ form(form) }}
     </div>
+    <script>
+        let draft_id =
+                {% if id is defined %}
+                    '{{ id }}';
+                {% else %}
+                    '';
+                {% endif %}
+
+        function digestForm() {
+            let jsonObj = {
+
+            };
+
+            let elements = document.querySelectorAll('[data-draft-type]');
+            for (let i =0; i<elements.length; i++){
+                jsonObj[elements[i].getAttribute('data-draft-type')]=elements[i].value;
+            }
+            console.log(jsonObj);
+            return jsonObj;
+        }
+
+        function autosaveDraft(content) {
+            let data = digestForm();
+            data.content = content;
+
+            let options = {
+                method: 'put',
+                mode: 'cors',
+                headers: {
+                    'X-CSRF-TOKEN': document.getElementById('article__token').value,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            let urlExtra = draft_id.length!==0 ? 'autosave/'+draft_id : 'firstautosave';
+
+            fetch('/draft/'+urlExtra, options).then(function (response){
+                console.log(response);
+                response.json().then(function (jsonResponse) {
+                    console.log(jsonResponse);
+                    if (jsonResponse.newDraftId!=null) {
+                        draft_id = jsonResponse.newDraftId;
+                    }
+                })
+            });
+        }
+
+
+        let editorChangeHandlerId;
+        document.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: 'textarea#article_content',
+                height: 500,
+                skin: false,
+                content_css: false,
+                plugins: 'advlist code emoticons link lists table wordcount',
+                toolbar: 'bold italic | bullist numlist | link emoticons',
+                setup: function(editor) {
+                    editor.on('Paste Change input Undo Redo', function () {
+                        clearTimeout(editorChangeHandlerId);
+                        editorChangeHandlerId = setTimeout(function() {
+                            autosaveDraft(editor.getContent())
+                        }, 1000);
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}

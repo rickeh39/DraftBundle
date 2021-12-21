@@ -9,10 +9,12 @@ use App\Form\Type\ArticleType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  * @Route("/draft")
@@ -53,6 +55,47 @@ class DraftController extends AbstractController
     }
 
     /**
+     * @Route("/autosave/{id}", name="draft_autosave")
+     * @Method("PUT")
+     */
+    public function autosave($id, ManagerRegistry $managerRegistry, Request $request)
+    {
+        $dm = $managerRegistry->getManager();
+        $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+
+        $data = json_decode($request->getContent(), true);
+
+        $draft->setTitle($data['title']);
+        $draft->setDescription($data['description']);
+        $draft->setContent($data['content']);
+
+        $dm->persist($draft);
+        $dm->flush();
+        return new JsonResponse(['data'=>$data]);
+    }
+
+    /**
+     * @Route("/firstautosave", name="draft_autosave_first")
+     * @Method("PUT")
+     */
+    public function autosaveFirst(ManagerRegistry $managerRegistry, Request $request)
+    {
+        $draft = new Draft();
+        $draft->setUser(1);
+        $dm = $managerRegistry->getManager();
+
+        $data = json_decode($request->getContent(), true);
+
+        $draft->setTitle($data['title']);
+        $draft->setDescription($data['description']);
+        $draft->setContent($data['content']);
+
+        $dm->persist($draft);
+        $dm->flush();
+        return new JsonResponse(['newDraftId'=>$draft->getId()]);
+    }
+
+    /**
      * @Route("/{id}", name="draft_show")
      */
     public function show(DocumentManager $documentManager, $id): Response
@@ -83,9 +126,10 @@ class DraftController extends AbstractController
             return $this->redirectToRoute('draft_show', ['id' => $form->getData()->getId()]);
         }
 
-        return $this->renderForm('draft/new.html.twig', [
-            'form' => $form,
-        ]);
+        return $this->render('draft/new.html.twig', array(
+            'form' => $form->createView(),
+            'id' => $id
+        ));
     }
 
     /**

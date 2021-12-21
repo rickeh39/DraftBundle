@@ -9,7 +9,7 @@
         <h3>Dit bevat de draft:</h3>
         <ul>
             <li><b>Beschrijving:</b> {{ draft.description }}</li>
-            <li><b>Content:</b> {{ draft.content }}</li>
+            <li><b>Content:</b> {{ draft.content | raw }}</li>
             <li><b>Gebruiker:</b> {{ draft.user }}</li>
         </ul>
 
