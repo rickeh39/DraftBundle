@@ -9,9 +9,10 @@ use App\Form\Type\ArticleType;
 use Doctrine\Bundle\MongoDBBundle\ManagerRegistry;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
 /**
  * @Route("/draft")
@@ -20,36 +21,32 @@ class DraftController extends AbstractController
 {
     /**
      * @Route("/", name="draft_index")
-     * @Method("GET")
      */
-    public function index(ManagerRegistry $managerRegistry)
+    public function index(ManagerRegistry $managerRegistry): Response
     {
-        $dm = $managerRegistry->getManager();
-        $drafts = $dm->getRepository(Draft::class)->findAll();
+        $documentManager = $managerRegistry->getManager();
+        $drafts = $documentManager->getRepository(Draft::class)->findAll();
         return $this->render('draft/index.html.twig', ['drafts' => $drafts]);
     }
 
     /**
      * @Route("/new", name="draft_new")
-     * @Method("POST")
      */
     public function new(ManagerRegistry $managerRegistry, Request $request)
     {
         $draft = new Draft();
         $draft->setUser(1);
-        $dm = $managerRegistry->getManager();
+        $documentManager = $managerRegistry->getManager();
 
         $form = $this->createForm(ArticleType::class, $draft);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $task = $form->getData();
-            $dm->persist($task);
-            $dm->flush();
 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $documentManager->persist($form->getData());
+            $documentManager->flush();
             return $this->redirectToRoute('draft_show', ['id' => $draft->getId()]);
         }
 
-        //do something
         return $this->renderForm('draft/new.html.twig', [
             'form' => $form,
         ]);
@@ -58,7 +55,7 @@ class DraftController extends AbstractController
     /**
      * @Route("/{id}", name="draft_show")
      */
-    public function show(DocumentManager $documentManager, $id)
+    public function show(DocumentManager $documentManager, $id): Response
     {
         $draft = $documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
         return $this->render('draft/show.html.twig', ['draft' => $draft]);
@@ -66,7 +63,6 @@ class DraftController extends AbstractController
 
     /**
      * @Route("/{id}/edit", name="draft_edit")
-     * @Method("PUT")
      */
     public function edit(DocumentManager $documentManager,Request $request, $id)
     {
@@ -82,11 +78,9 @@ class DraftController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $task = $form->getData();
-            $documentManager->persist($task);
+            $documentManager->persist($form->getData());
             $documentManager->flush();
-            $this->addFlash('success', "De draft is bijgewerkt");
-            return $this->redirectToRoute('draft_show', ['id' => $task->getId()]);
+            return $this->redirectToRoute('draft_show', ['id' => $form->getData()->getId()]);
         }
 
         return $this->renderForm('draft/new.html.twig', [
@@ -97,27 +91,30 @@ class DraftController extends AbstractController
     /**
      * @Route("/{id}/publish", name="draft_publish")
      */
-    public function publish(ManagerRegistry $managerRegistry,$id)
+    public function publish(ManagerRegistry $managerRegistry,$id): RedirectResponse
     {
-        $dm = $managerRegistry->getManager();
-        $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        $article= $dm->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
-        if($article == null) $article = new Article;
+        $documentManager = $managerRegistry->getManager();
+
+        $draft = $documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $article= $documentManager->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
         $version = new Version;
+
+        if ($article == null) {
+            $article = new Article;
+        }
+
         $version->setContent($draft->getContent());
         $article->addVersion($version);
-
-        //TODO Er moet automatisch nog een nieuwe versie gegenereerd worden op het moment van publiceren
         $article->setTitle($draft->getTitle());
         $article->setContent($draft->getContent());
         $article->setDescription($draft->getDescription());
         $article->setUser($draft->getUser());
         $article->setDraft(null);
 
-        $dm->persist($version);
-        $dm->persist($article);
-        $dm->remove($draft);
-        $dm->flush();
+        $documentManager->persist($version);
+        $documentManager->persist($article);
+        $documentManager->remove($draft);
+        $documentManager->flush();
 
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
@@ -127,11 +124,13 @@ class DraftController extends AbstractController
      */
     private function articleToDraft(Article $article){
         $draft = new Draft;
+
         $draft->setUser($article->getUser());
         $draft->setDescription($article->getDescription());
         $draft->setContent($article->getContent());
         $draft->setTitle($article->getTitle());
         $draft->setId($article->getId());
+
         $draft->setArticle($article);
         $article->setDraft($draft);
     }

@@ -9,7 +9,7 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Dit is een overzicht met artikelen:</h1>
+    <h1>Dit is het overzicht met artikelen:</h1>
 
     <ul>
         {% for article in articles %}
@@ -20,6 +20,6 @@
             {% endif %}
         {% endfor %}
     </ul>
-    <a href="{{ path('draft_new') }}">Nieuwe draft toevoegen</a>
+    <a href="{{ path('draft_new') }}"><button class="button">Nieuwe draft toevoegen</button></a>
 </div>
 {% endblock %}

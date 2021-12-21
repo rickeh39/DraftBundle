@@ -38,15 +38,15 @@ class Article extends Content
     }
 
     /**
-     * @return PersistentCollection
+     * @return ArrayCollection|PersistentCollection
      */
-    public function getVersions(): PersistentCollection
+    public function getVersions()
     {
         return $this->versions;
     }
 
     public function addVersion(Version $version){
-        if($this->versions->contains($version)){
+        if ($this->versions->contains($version)){
             return;
         }
         $this->versions->add($version);

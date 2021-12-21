@@ -18,7 +18,7 @@
             <li><b>Gebruiker:</b> {{ draft.user }}</li>
         </ul>
 
-        <a href="{{ path('draft_edit',{'id': draft.id}) }}">Bewerken</a>
-        <a href="{{ path('draft_publish',{'id': draft.id}) }}" class="btn btn-primary">Publiceren</a>
+        <a href="{{ path('draft_edit',{'id': draft.id}) }}"><button class="button">Bewerken</button></a>
+        <a href="{{ path('draft_publish',{'id': draft.id}) }}"><button class="button">Publiceren</button></a>
     </div>
 {% endblock %}
