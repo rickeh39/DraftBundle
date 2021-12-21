@@ -71,9 +71,15 @@ class DraftController extends AbstractController
     public function edit(DocumentManager $documentManager,Request $request, $id)
     {
         $article = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
-        if($article->getDraft() == null) $this->articleToDraft($article);
 
-        $form = $this->createForm(ArticleType::class, $article->getDraft());
+        if ($article != null) {
+            if ($article->getDraft() == null) $this->articleToDraft($article);
+            $form = $this->createForm(ArticleType::class, $article->getDraft());
+        } else {
+            $draft = $documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
+            $form = $this->createForm(ArticleType::class, $draft);
+        }
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $task = $form->getData();
