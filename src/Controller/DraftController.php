@@ -119,7 +119,7 @@ class DraftController extends AbstractController
         $dm->remove($draft);
         $dm->flush();
 
-        return $this->redirectToRoute('article_index');
+        return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
     /**
