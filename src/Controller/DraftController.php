@@ -143,9 +143,12 @@ class DraftController extends AbstractController
         $dm = $managerRegistry->getManager();
         $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]);
-        if($article != null) $article->setDraft(null);
+        if($article != null)
+        {
+            $article->setDraft(null);
+            $dm->persist($article);
+        }
 
-        $dm->persist($article);
         $dm->remove($draft);
         $dm->flush();
         return $this->redirectToRoute('draft_index');
