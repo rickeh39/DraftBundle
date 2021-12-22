@@ -11,7 +11,7 @@ use Doctrine\ODM\MongoDB\PersistentCollection;
  */
 class Article extends Content
 {
-    /** @MongoDB\ReferenceOne(targetDocument=Draft::class) */
+    /** @MongoDB\ReferenceOne(targetDocument=Draft::class, orphanRemoval=true) */
     protected $draft;
 
     /** @MongoDB\ReferenceMany(targetDocument=Version::class)*/

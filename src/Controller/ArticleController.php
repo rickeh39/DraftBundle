@@ -40,6 +40,18 @@ class ArticleController extends AbstractController
     }
 
     /**
+     * @Route("/{id}/remove", name="article_remove")
+     */
+    public function remove(ManagerRegistry $managerRegistry, $id){
+        $dm = $managerRegistry->getManager();
+        $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]);
+
+        $dm->remove($article);
+        $dm->flush();
+        return $this->redirectToRoute('article_index');
+    }
+
+    /**
      * @Route("/{articleId}/{versionId}", name="article_version")
      */
     public function version(DocumentManager $documentManager, $versionId, $articleId): Response

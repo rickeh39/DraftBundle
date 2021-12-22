@@ -22,6 +22,8 @@
                 <p>{{ article.createDate | date('d-m-y H:m:s') }}</p>
             </div>
 
+            <a class="color-danger text-decoration-none" href="{{ path('article_remove',{'id': article.id}) }}">Verwijderen</a>
+
         </div>
         {% endfor %}
     <a href="{{ path('draft_new') }}"><button>Nieuwe draft toevoegen</button></a>

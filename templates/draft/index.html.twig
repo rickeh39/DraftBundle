@@ -37,6 +37,7 @@
                         <td>
                             <i class="fas fa-edit me-1"></i>
                             <a class="color-primary text-decoration-none" href="{{ path('draft_show',{'id': draft.id}) }}">Bewerken</a>
+                            <a class="color-danger text-decoration-none" href="{{ path('draft_remove',{'id': draft.id}) }}">Verwijderen</a>
                         </td>
                     </tr>
                 {% endfor %}

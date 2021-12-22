@@ -120,16 +120,28 @@ class DraftController extends AbstractController
         }
 
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $documentManager->persist($form->getData());
-            $documentManager->flush();
-            return $this->redirectToRoute('draft_show', ['id' => $form->getData()->getId()]);
-        }
+        $documentManager->persist($form->getData());
+        $documentManager->flush();
 
         return $this->render('draft/new.html.twig', array(
             'form' => $form->createView(),
             'id' => $id
         ));
+    }
+
+    /**
+     * @Route("/{id}/remove", name="draft_remove")
+     */
+    public function remove(ManagerRegistry $managerRegistry, $id){
+        $dm = $managerRegistry->getManager();
+        $draft = $dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $article = $dm->getRepository(Article::class)->findOneBy(['id' => $id]);
+        if($article != null) $article->setDraft(null);
+
+        $dm->persist($article);
+        $dm->remove($draft);
+        $dm->flush();
+        return $this->redirectToRoute('draft_index');
     }
 
     /**
