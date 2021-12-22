@@ -39,6 +39,10 @@ abstract class Content
      */
     protected $user;
 
+    public function __construct(){
+        $this->createDate = date('d-m-y H:i:s');
+    }
+
     /**
      * @return mixed
      */

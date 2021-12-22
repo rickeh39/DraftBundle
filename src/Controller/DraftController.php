@@ -68,6 +68,7 @@ class DraftController extends AbstractController
         $draft->setTitle($data['title']);
         $draft->setDescription($data['description']);
         $draft->setContent($data['content']);
+        $draft->setUpdatedAt( date('d-m-y H:m:s'));
 
         $dm->persist($draft);
         $dm->flush();
