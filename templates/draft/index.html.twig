@@ -27,17 +27,21 @@
                     <th scope="col">Titel</th>
                     <th scope="col">Laatste bewerkdatum</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 {% for draft in drafts %}
                     <tr>
                         <td>{{ draft.title }}</td>
-                        <td>22:25:53 - 21 Dec, 2021.</td>
+                        <td>{{ draft.updatedAt | date('d-m-Y H:i:s') }}</td>
                         <td>
                             <i class="fas fa-edit me-1"></i>
                             <a class="color-primary text-decoration-none" href="{{ path('draft_show',{'id': draft.id}) }}">Bewerken</a>
-                            <a class="color-danger text-decoration-none" href="{{ path('draft_remove',{'id': draft.id}) }}">Verwijderen</a>
+                        </td>
+                        <td>
+                            <i class="fas fa-trash me-1"></i>
+                            <a class="text-danger text-decoration-none" href="{{ path('draft_remove',{'id': draft.id}) }}">Verwijderen</a>
                         </td>
                     </tr>
                 {% endfor %}

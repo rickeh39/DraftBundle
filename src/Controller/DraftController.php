@@ -51,6 +51,7 @@ class DraftController extends AbstractController
 
         return $this->renderForm('draft/new.html.twig', [
             'form' => $form,
+            'updatedAt' => $draft->getUpdatedAt()
         ]);
     }
 
@@ -68,11 +69,11 @@ class DraftController extends AbstractController
         $draft->setTitle($data['title']);
         $draft->setDescription($data['description']);
         $draft->setContent($data['content']);
-        $draft->setUpdatedAt( date('d-m-y H:m:s'));
+        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
 
         $dm->persist($draft);
         $dm->flush();
-        return new JsonResponse(['data'=>$data]);
+        return new JsonResponse(['updatedAt'=> $draft->getUpdatedAt()]);
     }
 
     /**
@@ -90,10 +91,11 @@ class DraftController extends AbstractController
         $draft->setTitle($data['title']);
         $draft->setDescription($data['description']);
         $draft->setContent($data['content']);
+        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
 
         $dm->persist($draft);
         $dm->flush();
-        return new JsonResponse(['newDraftId'=>$draft->getId()]);
+        return new JsonResponse(['newDraftId'=>$draft->getId(), 'updatedAt' => $draft->getUpdatedAt()]);
     }
 
     /**
@@ -112,11 +114,14 @@ class DraftController extends AbstractController
     {
         $article = $documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
 
+        $updatedAt = null;
+
         if ($article != null) {
             if ($article->getDraft() == null) $this->articleToDraft($article);
             $form = $this->createForm(ArticleType::class, $article->getDraft());
         } else {
             $draft = $documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
+            $updatedAt = $draft->getUpdatedAt();
             $form = $this->createForm(ArticleType::class, $draft);
         }
 
@@ -126,7 +131,8 @@ class DraftController extends AbstractController
 
         return $this->render('draft/new.html.twig', array(
             'form' => $form->createView(),
-            'id' => $id
+            'id' => $id,
+            'updatedAt' => $updatedAt
         ));
     }
 

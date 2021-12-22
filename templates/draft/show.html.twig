@@ -9,7 +9,7 @@
               url('https://source.unsplash.com/Wh2FhL0v_eo') center center;
              background-size: cover; height: 300px">
         <div class="text-white pt-5">
-            <h1 class="display-1 text-uppercase d-inline fw-bolder">DRAFT BEWERKEN</h1>
+            <h1 class="display-1 text-uppercase d-inline fw-bolder">DRAFT</h1>
         </div>
     </div>
     <svg id="visual" viewBox="0 0 900 150" class="w-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
@@ -67,7 +67,7 @@
         <div class="row row-cols-1 row-cols-lg-2">
             <div class="col d-flex align-items-center fs-5 mt-5 fw-light">
                 <i class="fas fa-save me-3 color-secondary"></i> Laatste Autosave:
-                <span class="color-primary ms-2">22:06:44 | 21 dec, 2021.</span>
+                <span class="color-primary ms-2">{{ draft.updatedAt | date('d-m-Y H:m:s') }}.</span>
             </div>
             <div class="col mt-5">
                 <div class="row row-cols-2">

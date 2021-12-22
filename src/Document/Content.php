@@ -40,7 +40,7 @@ abstract class Content
     protected $user;
 
     public function __construct(){
-        $this->createDate = date('d-m-y H:i:s');
+        $this->createDate = date('Y-m-d H:i:s');
     }
 
     /**

@@ -19,7 +19,7 @@ class Draft extends Content
 
     public function __construct(){
         parent::__construct();
-        $this->updatedAt = date('d-m-y H:m:s');
+        $this->updatedAt = date('d-m-Y H:i:s');
     }
 
     /**

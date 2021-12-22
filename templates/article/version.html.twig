@@ -11,7 +11,7 @@
             <ul>
                 {% for art_version in article.versions %}
                     {% if art_version.versionDate == version.versionDate %}
-                        <li> <b>Datum & tijd:</b> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-y H:m:s') }}</li>
+                        <li> <b>Datum & tijd:</b> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-Y H:m:s') }}</li>
                         <li> <b>Content:</b> {{ article.versions[(loop.index - 2)].content | raw }}</li>
                     {% endif %}
                 {% endfor %}
@@ -20,7 +20,7 @@
             Nieuwste versie:
         {% endif %}
         <ul>
-            <li> <b>Datum & tijd:</b> {{ version.versionDate | date('d-m-y H:m:s') }}</li>
+            <li> <b>Datum & tijd:</b> {{ version.versionDate | date('d-m-Y H:m:s') }}</li>
             <li> <b>Content:</b> {{ version.content | raw }}</li>
         </ul>
 

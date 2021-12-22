@@ -25,3 +25,6 @@ require('tinymce/plugins/link');
 require('tinymce/plugins/lists');
 require('tinymce/plugins/table');
 require('tinymce/plugins/wordcount');
+
+//import the autosavere module for tinymce
+window.AutoSaver = require('./AutoSaver');

@@ -1,77 +1,38 @@
 {% extends 'base.html.twig' %}
 {% block body %}
-
-    <div class="example-wrapper">
-        <h2 class="display-2 mb-5">Nieuwe draft maken</h2>
-        {{ form(form) }}
+    <div class="d-flex align-items-center justify-content-center pb-2 pt-5"
+         style="background: linear-gradient(to bottom, rgba(245, 246, 252, 0.5), rgba(99, 130, 246, 1)),
+              url('https://source.unsplash.com/Wh2FhL0v_eo') center center;
+             background-size: cover; height: 300px">
+        <div class="text-white pt-5">
+            <h1 class="display-1 text-uppercase d-inline fw-bolder">DRAFT BEWERKEN</h1>
+        </div>
     </div>
+    <svg id="visual" viewBox="0 0 900 150" class="w-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+        <path d="M0 54L12.5 59.8C25 65.7 50 77.3 75 85.2C100 93 125 97 150 86.3C175 75.7 200 50.3 225 50.5C250 50.7 275 76.3 300 86.3C325 96.3 350 90.7 375 87.8C400 85 425 85 450 76.7C475 68.3 500 51.7 525 52.3C550 53 575 71 600 85.3C625 99.7 650 110.3 675 106.3C700 102.3 725 83.7 750 69.7C775 55.7 800 46.3 825 50.8C850 55.3 875 73.7 887.5 82.8L900 92L900 0L887.5 0C875 0 850 0 825 0C800 0 775 0 750 0C725 0 700 0 675 0C650 0 625 0 600 0C575 0 550 0 525 0C500 0 475 0 450 0C425 0 400 0 375 0C350 0 325 0 300 0C275 0 250 0 225 0C200 0 175 0 150 0C125 0 100 0 75 0C50 0 25 0 12.5 0L0 0Z" fill="#6382F6" stroke-linecap="round" stroke-linejoin="miter">
+        </path>
+    </svg>
+
+    <div class="container px-5">
+        {{ form(form) }}
+
+        <div class="pt-3">
+            <i class="fas fa-save me-3 color-secondary"></i> Laatste Autosave:
+                <span class="color-primary ms-4 ps-1" id="lastAutoSaveLabel">{{ updatedAt | date('d-m-Y H:i:s') }}.</span>
+        </div>
+    </div>
+
     <script>
-        let draft_id =
-                {% if id is defined %}
-                    '{{ id }}';
-                {% else %}
-                    '';
-                {% endif %}
-
-        function digestForm() {
-            let jsonObj = {
-
-            };
-
-            let elements = document.querySelectorAll('[data-draft-type]');
-            for (let i =0; i<elements.length; i++){
-                jsonObj[elements[i].getAttribute('data-draft-type')]=elements[i].value;
-            }
-            console.log(jsonObj);
-            return jsonObj;
-        }
-
-        function autosaveDraft(content) {
-            let data = digestForm();
-            data.content = content;
-
-            let options = {
-                method: 'put',
-                mode: 'cors',
-                headers: {
-                    'X-CSRF-TOKEN': document.getElementById('article__token').value,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            };
-
-            let urlExtra = draft_id.length!==0 ? 'autosave/'+draft_id : 'firstautosave';
-
-            fetch('/draft/'+urlExtra, options).then(function (response){
-                console.log(response);
-                response.json().then(function (jsonResponse) {
-                    console.log(jsonResponse);
-                    if (jsonResponse.newDraftId!=null) {
-                        draft_id = jsonResponse.newDraftId;
-                    }
-                })
-            });
+        function updateSaveDateTime(saveMessage){
+            document.getElementById('lastAutoSaveLabel').innerHTML = saveMessage+".";
         }
 
 
-        let editorChangeHandlerId;
         document.addEventListener('DOMContentLoaded', function () {
-            tinymce.init({
-                selector: 'textarea#article_content',
-                height: 500,
-                skin: false,
-                content_css: false,
-                plugins: 'advlist code emoticons link lists table wordcount',
-                toolbar: 'bold italic | bullist numlist | link emoticons',
-                setup: function(editor) {
-                    editor.on('Paste Change input Undo Redo', function () {
-                        clearTimeout(editorChangeHandlerId);
-                        editorChangeHandlerId = setTimeout(function() {
-                            autosaveDraft(editor.getContent())
-                        }, 1000);
-                    });
-                }
-            });
+            let draft_id = {% if id is defined %} '{{ id }}'; {% else %} ''; {% endif %}
+            let autosaver = window.AutoSaver();
+            autosaver.init('textarea#article_content', draft_id);
+            autosaver.addSaveListener(updateSaveDateTime);
         });
     </script>
 {% endblock %}

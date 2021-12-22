@@ -25,7 +25,7 @@ class Version {
     protected $content;
 
     public function __construct(){
-     $this->versionDate = date('d-m-y H:m:s');
+     $this->versionDate = date('Y-m-d H:i:s');
     }
 
     /**

@@ -18,6 +18,7 @@ class Article extends Content
     protected $versions;
 
     public function __construct(){
+        parent::__construct();
         $this->versions = new ArrayCollection();
     }
 
