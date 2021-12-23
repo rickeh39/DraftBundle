@@ -22,8 +22,7 @@
         </div>
 
         <div>
-            <a class="btn bg-secondary" id="cancelButton">Annuleren</a>
-            <a class="btn bg-primary" href="{{ path('draft_index') }}">Terug</a>
+            <a class="btn bg-primary" href="{{ path('article_index') }}">Terug</a>
         </div>
     </div>
 
@@ -32,17 +31,11 @@
             document.getElementById('lastAutoSaveLabel').innerHTML = saveMessage+".";
         }
 
+
         document.addEventListener('DOMContentLoaded', function () {
             let draft_id = {% if id is defined %} '{{ id }}'; {% else %} ''; {% endif %}
             let autosaver = window.AutoSaver();
             autosaver.init('textarea#article_content', draft_id);
-            document.getElementById('cancelButton').onclick=function (){
-                if (autosaver.getDraftId().length === 0){
-                    window.location.href='http://127.0.0.1:8000/draft/'
-                } else {
-                    window.location.href='http://127.0.0.1:8000/draft/' + autosaver.getDraftId() + '/remove'
-                }
-            }
             autosaver.addSaveListener(updateSaveDateTime);
         });
     </script>

@@ -1,9 +1,13 @@
 const AutoSaver = (function() {
     let editorChangeHandlerId;
-    let draft_id;
+    let draft_id = '';
     let isCreated = true;
 
     let saveCallbackFunction = null;
+
+    function _getDraftId(){
+        return draft_id;
+    }
 
     function _digestForm() {
         let jsonObj = {};
@@ -87,6 +91,7 @@ const AutoSaver = (function() {
     return {
         init: _init,
         addSaveListener: _addSaveListener,
+        getDraftId: _getDraftId,
     }
 });
 

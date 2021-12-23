@@ -28,13 +28,13 @@ class ArticleType extends AbstractType {
                     'style' => 'width: 100%',
                     'data-draft-type' => 'content'
                 ],
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Opslaan als artikel',
-                'attr' => [
-                    'class' => 'btn bg-primary mt-3'
-                ]
             ]);
+//            ->add('save', SubmitType::class, [
+//                'label' => 'Opslaan als artikel',
+//                'attr' => [
+//                    'class' => 'btn bg-primary mt-3'
+//                ]
+//            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
