@@ -131,7 +131,7 @@ class DraftController extends AbstractController
         $this->documentManager->persist($form->getData());
         $this->documentManager->flush();
 
-        return $this->render('draft/new.html.twig', array(
+        return $this->render('draft/edit.html.twig', array(
             'form' => $form->createView(),
             'id' => $id,
             'updatedAt' => $updatedAt
