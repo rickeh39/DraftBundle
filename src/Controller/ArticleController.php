@@ -15,11 +15,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  */
 class ArticleController extends AbstractController
 {
-    private $documentManager;
+    private $dm;
 
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(DocumentManager $dm)
     {
-        $this->documentManager = $documentManager;
+        $this->dm = $dm;
     }
 
     /**
@@ -28,7 +28,7 @@ class ArticleController extends AbstractController
      */
     public function index(): Response
     {
-        $articles = $this->documentManager->getRepository(Article::class)->findAll();
+        $articles = $this->dm->getRepository(Article::class)->findAll();
         return $this->render('article/index.html.twig', ['articles' => $articles]);
     }
 
@@ -37,7 +37,7 @@ class ArticleController extends AbstractController
      */
     public function show($id): Response
     {
-        $article = $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
         return $this->render('article/show.html.twig', ['article' => $article]);
     }
 
@@ -45,10 +45,10 @@ class ArticleController extends AbstractController
      * @Route("/{id}/remove", name="article_remove")
      */
     public function remove($id){
-        $article = $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
 
-        $this->documentManager->remove($article);
-        $this->documentManager->flush();
+        $this->dm->remove($article);
+        $this->dm->flush();
         return $this->redirectToRoute('article_index');
     }
 
@@ -57,8 +57,8 @@ class ArticleController extends AbstractController
      */
     public function version($versionId, $articleId): Response
     {
-        $version = $this->documentManager->getRepository(Version::class)->findOneBy(['id' => $versionId]);
-        $article = $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $articleId]);
+        $version = $this->dm->getRepository(Version::class)->findOneBy(['id' => $versionId]);
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $articleId]);
         return $this->render('article/version.html.twig', ['version' => $version, 'article' => $article]);
     }
 }

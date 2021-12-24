@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Document\Article;
+use App\Document\Content;
 use App\Document\Draft;
 use App\Document\Version;
 use App\Form\Type\ArticleType;
@@ -20,11 +21,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
  */
 class DraftController extends AbstractController
 {
-    private $documentManager;
+    private $dm;
 
-    public function __construct(DocumentManager $documentManager)
+    public function __construct(DocumentManager $dm)
     {
-        $this->documentManager = $documentManager;
+        $this->dm = $dm;
     }
 
     /**
@@ -32,7 +33,7 @@ class DraftController extends AbstractController
      */
     public function index(): Response
     {
-        $drafts = $this->documentManager->getRepository(Draft::class)->findAll();
+        $drafts = $this->dm->getRepository(Draft::class)->findAll();
         return $this->render('draft/index.html.twig', ['drafts' => $drafts]);
     }
 
@@ -48,8 +49,8 @@ class DraftController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->documentManager->persist($form->getData());
-            $this->documentManager->flush();
+            $this->dm->persist($form->getData());
+            $this->dm->flush();
             return $this->redirectToRoute('draft_show', ['id' => $draft->getId()]);
         }
 
@@ -65,20 +66,10 @@ class DraftController extends AbstractController
      */
     public function autosave($id, Request $request)
     {
-        $draft = $this->documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
-
-        $data = json_decode($request->getContent(), true);
-
-        $draft->setTitle($data['title']);
-        $draft->setDescription($data['description']);
-        $draft->setContent($data['content']);
-        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
-
-        $this->documentManager->persist($draft);
-        $this->documentManager->flush();
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $this->saveDraft($request,$draft);
         return new JsonResponse(['updatedAt'=> $draft->getUpdatedAt()]);
     }
-
     /**
      * @Route("/firstautosave", name="draft_autosave_first")
      * @Method("PUT")
@@ -87,16 +78,7 @@ class DraftController extends AbstractController
     {
         $draft = new Draft();
         $draft->setUser(1);
-
-        $data = json_decode($request->getContent(), true);
-
-        $draft->setTitle($data['title']);
-        $draft->setDescription($data['description']);
-        $draft->setContent($data['content']);
-        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
-
-        $this->documentManager->persist($draft);
-        $this->documentManager->flush();
+        $this->saveDraft($request,$draft);
         return new JsonResponse(['newDraftId'=>$draft->getId(), 'updatedAt' => $draft->getUpdatedAt()]);
     }
 
@@ -105,7 +87,7 @@ class DraftController extends AbstractController
      */
     public function show($id): Response
     {
-        $draft = $this->documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         return $this->render('draft/show.html.twig', ['draft' => $draft]);
     }
 
@@ -114,22 +96,22 @@ class DraftController extends AbstractController
      */
     public function edit(Request $request, $id)
     {
-        $article = $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
 
         $updatedAt = null;
-
         if ($article != null) {
             if ($article->getDraft() == null) $this->articleToDraft($article);
-            $form = $this->createForm(ArticleType::class, $article->getDraft());
-        } else {
-            $draft = $this->documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
-            $updatedAt = $draft->getUpdatedAt();
-            $form = $this->createForm(ArticleType::class, $draft);
+            $draft =$article->getDraft();
         }
+        else {
+            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+            $updatedAt = $draft->getUpdatedAt();
+        }
+        $form = $this->createForm(ArticleType::class,$draft);
 
         $form->handleRequest($request);
-        $this->documentManager->persist($form->getData());
-        $this->documentManager->flush();
+        $this->dm->persist($form->getData());
+        $this->dm->flush();
 
         return $this->render('draft/edit.html.twig', array(
             'form' => $form->createView(),
@@ -142,17 +124,17 @@ class DraftController extends AbstractController
      * @Route("/{id}/remove", name="draft_remove")
      */
     public function remove($id) {
-        $draft = $this->documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        $article = $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
 
         if ($article != null)
         {
             $article->setDraft(null);
-            $this->documentManager->persist($article);
+            $this->dm->persist($article);
         }
 
-        $this->documentManager->remove($draft);
-        $this->documentManager->flush();
+        $this->dm->remove($draft);
+        $this->dm->flush();
         return $this->redirectToRoute('draft_index');
     }
 
@@ -161,8 +143,8 @@ class DraftController extends AbstractController
      */
     public function publish($id): RedirectResponse
     {
-        $draft = $this->documentManager->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        $article= $this->documentManager->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        $article= $this->dm->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
         $version = new Version;
 
         if ($article == null) {
@@ -177,10 +159,10 @@ class DraftController extends AbstractController
         $article->setUser($draft->getUser());
         $article->setDraft(null);
 
-        $this->documentManager->persist($version);
-        $this->documentManager->persist($article);
-        $this->documentManager->remove($draft);
-        $this->documentManager->flush();
+        $this->dm->persist($version);
+        $this->dm->persist($article);
+        $this->dm->remove($draft);
+        $this->dm->flush();
 
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
@@ -199,5 +181,15 @@ class DraftController extends AbstractController
 
         $draft->setArticle($article);
         $article->setDraft($draft);
+    }
+
+    private function saveDraft(Request $request,Draft $draft){
+        $data = json_decode($request->getContent(), true);
+        $draft->setTitle($data['title']);
+        $draft->setDescription($data['description']);
+        $draft->setContent($data['content']);
+        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
+        $this->dm->persist($draft);
+        $this->dm->flush();
     }
 }
