@@ -95,21 +95,24 @@ class DraftController extends AbstractController
     /**
      * @Route("/{id}/edit", name="draft_edit")
      */
-    public function edit(Request $request, $id)
+    public function edit(Request $request, $id): Response
     {
         $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
+        $draft = null;
 
-        $updatedAt = null;
         if ($article != null) {
-            if ($article->getDraft() == null) $this->articleToDraft($article);
-            $draft =$article->getDraft();
+            if ($article->getDraft() == null) {
+                $draft = new Draft;
+                $this->oldToNewEntity($article, $draft);
+                $draft->setId($article->getId());
+                $draft->setArticle($article);
+                $article->setDraft($draft);
+            } else {
+                $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+            }
         }
-        else {
-            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-            $updatedAt = $draft->getUpdatedAt();
-        }
-        $form = $this->createForm(ArticleType::class,$draft);
 
+        $form = $this->createForm(ArticleType::class, $draft);
         $form->handleRequest($request);
         $this->dm->persist($form->getData());
         $this->dm->flush();
@@ -117,14 +120,15 @@ class DraftController extends AbstractController
         return $this->render('draft/edit.html.twig', array(
             'form' => $form->createView(),
             'id' => $id,
-            'updatedAt' => $updatedAt
+            'updatedAt' => $draft->getUpdatedAt()
         ));
     }
 
     /**
      * @Route("/{id}/remove", name="draft_remove")
      */
-    public function remove($id) {
+    public function remove($id): RedirectResponse
+    {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
 
@@ -146,48 +150,40 @@ class DraftController extends AbstractController
     {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         $article= $this->dm->getRepository(Article::class)->findOneBy(['id' => $draft->getId()]);
-        $version = new Version;
+        $version = new Version();
 
         if ($article == null) {
             $article = new Article;
         }
 
-        $version->setContent($draft->getContent());
-        $article->addVersion($version);
-        $article->setTitle($draft->getTitle());
-        $article->setContent($draft->getContent());
-        $article->setDescription($draft->getDescription());
-        $article->setUser($draft->getUser());
-        $article->setDraft(null);
+        $this->oldToNewEntity($draft, $article);
 
-        $this->dm->persist($version);
+        $article->setId($draft->getId());
+        $article->setDraft(null);
+        $article->addVersion($version);
+
+        $version->setContent($draft->getContent());
+
         $this->dm->persist($article);
+        $this->dm->persist($version);
         $this->dm->remove($draft);
         $this->dm->flush();
 
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
-    /**
-     * @param Article $article
-     */
-    private function articleToDraft(Article $article){
-        $draft = new Draft;
-        $oldReflection = new ReflectionObject($article);
-        $newReflection = new ReflectionObject($draft);
+    private function oldToNewEntity($oldEntity, $newEntity){
+        $oldReflection = new ReflectionObject($oldEntity);
+        $newReflection = new ReflectionObject($newEntity);
 
         foreach ($oldReflection->getProperties() as $property) {
             if ($newReflection->hasProperty($property->getName())) {
                 $newProperty = $newReflection->getProperty($property->getName());
                 $newProperty->setAccessible(true);
                 $property->setAccessible(true);
-                $newProperty->setValue($draft, $property->getValue($article));
+                $newProperty->setValue($newEntity, $property->getValue($oldEntity));
             }
         }
-
-        $draft->setId($article->getId());
-        $draft->setArticle($article);
-        $article->setDraft($draft);
     }
 
     private function saveDraft(Request $request,Draft $draft){
