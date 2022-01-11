@@ -8,6 +8,7 @@ use App\Document\Draft;
 use App\Document\Version;
 use App\Form\Type\ArticleType;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use ReflectionObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -172,13 +173,19 @@ class DraftController extends AbstractController
      */
     private function articleToDraft(Article $article){
         $draft = new Draft;
+        $oldReflection = new ReflectionObject($article);
+        $newReflection = new ReflectionObject($draft);
 
-        $draft->setUser($article->getUser());
-        $draft->setDescription($article->getDescription());
-        $draft->setContent($article->getContent());
-        $draft->setTitle($article->getTitle());
+        foreach ($oldReflection->getProperties() as $property) {
+            if ($newReflection->hasProperty($property->getName())) {
+                $newProperty = $newReflection->getProperty($property->getName());
+                $newProperty->setAccessible(true);
+                $property->setAccessible(true);
+                $newProperty->setValue($draft, $property->getValue($article));
+            }
+        }
+
         $draft->setId($article->getId());
-
         $draft->setArticle($article);
         $article->setDraft($draft);
     }
