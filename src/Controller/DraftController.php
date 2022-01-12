@@ -190,7 +190,7 @@ class DraftController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $draft->setTitle($data['title']);
         $draft->setDescription($data['description']);
-        $draft->setContent($data['content']);
+        $draft->setContent($data['contentType']);
         $draft->setUpdatedAt( date('d-m-Y H:i:s'));
         $this->dm->persist($draft);
         $this->dm->flush();

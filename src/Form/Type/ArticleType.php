@@ -13,28 +13,21 @@ class ArticleType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('title', TextType::class,[
-                'label' => 'Titel',
+            ->add('contentName', TextType::class,[
                 'attr' => ['data-draft-type' => 'title']
             ])
             ->add('description', TextType::class,[
                 'label' => 'Omschrijving',
                 'attr' => ['data-draft-type' => 'description']
             ])
-            ->add('content', TextareaType::class, [
+            ->add('contentType', TextareaType::class, [
                 'attr' => [
                     'class' => 'tinymce',
                     'rows' => 10,
                     'style' => 'width: 100%',
-                    'data-draft-type' => 'content'
+                    'data-draft-type' => 'contentType'
                 ],
             ]);
-//            ->add('save', SubmitType::class, [
-//                'label' => 'Opslaan als artikel',
-//                'attr' => [
-//                    'class' => 'btn bg-primary mt-3'
-//                ]
-//            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
