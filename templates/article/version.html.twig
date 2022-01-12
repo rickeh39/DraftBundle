@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Version!{% endblock %}
+
+{% block body %}
+    <div class="example-wrapper">
+        <h1>Titel van het artikel: {{ article.title }}</h1>
+
+        {% if article.versions[0] != version %}
+            Vorige versie:
+            <ul>
+                {% for art_version in article.versions %}
+                    {% if art_version.versionDate == version.versionDate %}
+                        <li> <b>Datum & tijd:</b> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-Y H:m:s') }}</li>
+                        <li> <b>Content:</b> {{ article.versions[(loop.index - 2)].content | raw }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+
+            Nieuwste versie:
+        {% endif %}
+        <ul>
+            <li> <b>Datum & tijd:</b> {{ version.versionDate | date('d-m-Y H:m:s') }}</li>
+            <li> <b>Content:</b> {{ version.content | raw }}</li>
+        </ul>
+
+    </div>
+{% endblock %}

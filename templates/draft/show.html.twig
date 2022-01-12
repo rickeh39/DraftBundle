@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello Draft!{% endblock %}
+
+{% block body %}
+
+    <div class="d-flex align-items-center justify-content-center pb-2 pt-5"
+         style="background: linear-gradient(to bottom, rgba(245, 246, 252, 0.5), rgba(99, 130, 246, 1)),
+              url('https://source.unsplash.com/Wh2FhL0v_eo') center center;
+             background-size: cover; height: 300px">
+        <div class="text-white pt-5">
+            <h1 class="display-1 text-uppercase d-inline fw-bolder">DRAFT</h1>
+        </div>
+    </div>
+    <svg id="visual" viewBox="0 0 900 150" class="w-100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
+        <path d="M0 54L12.5 59.8C25 65.7 50 77.3 75 85.2C100 93 125 97 150 86.3C175 75.7 200 50.3 225 50.5C250 50.7 275 76.3 300 86.3C325 96.3 350 90.7 375 87.8C400 85 425 85 450 76.7C475 68.3 500 51.7 525 52.3C550 53 575 71 600 85.3C625 99.7 650 110.3 675 106.3C700 102.3 725 83.7 750 69.7C775 55.7 800 46.3 825 50.8C850 55.3 875 73.7 887.5 82.8L900 92L900 0L887.5 0C875 0 850 0 825 0C800 0 775 0 750 0C725 0 700 0 675 0C650 0 625 0 600 0C575 0 550 0 525 0C500 0 475 0 450 0C425 0 400 0 375 0C350 0 325 0 300 0C275 0 250 0 225 0C200 0 175 0 150 0C125 0 100 0 75 0C50 0 25 0 12.5 0L0 0Z" fill="#6382F6" stroke-linecap="round" stroke-linejoin="miter">
+        </path>
+    </svg>
+
+
+    <div class="container px-5">
+        <h6 class="text-center display-6 fw-normal">Meta <span class="color-primary">Informatie</span>.</h6>
+        <div class="w-100 mt-3">
+            <div class="row row-cols-1 row-cols-lg-2">
+                <div class="col pb-5">
+                    <div class="card border-0 bg-white">
+                        <div class="card-body shadow-lg rounded-3">
+                            <table class="table mb-0">
+                                <thead>
+                                <tr class="bg-dark text-white">
+                                    <th scope="col">Title</th>
+                                    <th scope="col">Descriptie</th>
+                                    <th scope="col">Eigendom van</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>{{ draft.title }}</td>
+                                    <td>{{ draft.description }}</td>
+                                    <td>Rïck Løistęr</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col pb-5">
+                    <div class="card border-0 bg-white">
+                        <div class="card-body shadow-lg rounded-3">
+                            versiegeschiedenis
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="text-center display-6 mt-5 fw-normal">Draft <span class="color-secondary">Inhoud</span>.</h6>
+        <div class="w-100 mt-3 pb-5">
+            <div class="card border-0 bg-white">
+                <div class="card-body shadow-lg rounded-3">
+                    {{ draft.content | raw }}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row row-cols-1 row-cols-lg-2">
+            <div class="col d-flex align-items-center fs-5 mt-5 fw-light">
+                <i class="fas fa-save me-3 color-secondary"></i> Laatste Autosave:
+                <span class="color-primary ms-2">{{ draft.updatedAt | date('d-m-Y H:m:s') }}.</span>
+            </div>
+            <div class="col mt-5">
+                <div class="row row-cols-2">
+                    <div class="col">
+                        <a class="btn bg-primary w-100" href="{{ path('draft_edit',{'id': draft.id}) }}">
+                            <i class="fas fa-edit me-1"></i> Bewerken
+                        </a>
+                    </div>
+                    <div class="col">
+                        <a class="btn bg-secondary w-100" href="{{ path('draft_publish',{'id': draft.id}) }}">
+                            <i class="fas fa-upload me-1"></i> Publiceren</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
