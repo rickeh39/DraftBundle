@@ -5,6 +5,9 @@ namespace App\Document;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Doctrine\ODM\MongoDB\PersistentCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 /**
  * @MongoDB\Document
@@ -18,16 +21,19 @@ abstract class Content
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
      */
     protected $title;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
      */
     protected $description;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextAreaType")
      */
     protected $content;
 
@@ -150,16 +156,16 @@ abstract class Content
     /**
      * @return ArrayCollection | PersistentCollection
      */
-    public function getContentTypes(): ArrayCollection
+    public function getContentTypes()
     {
         return $this->contentTypes;
     }
 
-    /**
-     * @param ArrayCollection $contentTypes
-     */
-    public function setContentTypes(ArrayCollection $contentTypes): void
+    public function addContentTypes(ContentType $contentType)
     {
-        $this->contentTypes = $contentTypes;
+        if ($this->contentTypes->contains($contentType)){
+            return;
+        }
+        $this->contentTypes->add($contentType);
     }
 }

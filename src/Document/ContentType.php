@@ -20,11 +20,6 @@ class ContentType
     protected $typeName;
 
     /**
-     * @MongoDB\Field(type="string")
-     */
-    protected $typeFormbuild;
-
-    /**
      * @return mixed
      */
     public function getId()
@@ -54,21 +49,5 @@ class ContentType
     public function setTypeName($typeName): void
     {
         $this->typeName = $typeName;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTypeFormbuild()
-    {
-        return $this->typeFormbuild;
-    }
-
-    /**
-     * @param mixed $typeFormbuild
-     */
-    public function setTypeFormbuild($typeFormbuild): void
-    {
-        $this->typeFormbuild = $typeFormbuild;
     }
 }

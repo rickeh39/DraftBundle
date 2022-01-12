@@ -7,14 +7,7 @@ use App\Form\Type\ContentTypeType;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use App\Document\Article;
-use App\Document\Content;
 use App\Document\Draft;
-use App\Document\Version;
-use App\Form\Type\ArticleType;
-use ReflectionObject;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -36,10 +29,24 @@ class ContentTypeController extends AbstractController
      * @Route("/", name="contentType")
      * @Method("GET")
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $types = $this->dm->getRepository(ContentType::class)->findAll();
         $form = $this->createForm(ContentTypeType::class, $types);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $draft = new Draft();
+            foreach ($form['selectedItems']->getData() as $contentType){
+                $draft->addContentTypes($contentType);
+            }
+            $draft->setUser(1);
+
+            $this->dm->persist($draft);
+            $this->dm->flush();
+            return $this->redirectToRoute('draft_create', ['id' => $draft->getId()]);
+        }
 
         return $this->renderForm('contentType/index.html.twig', [
             'form' => $form,
