@@ -2,7 +2,9 @@
 
 namespace App\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 
 /**
  * @MongoDB\Document
@@ -39,8 +41,14 @@ abstract class Content
      */
     protected $user;
 
+    /**
+     * @MongoDB\ReferenceMany(targetDocument=ContentType::class)
+     */
+    protected $contentTypes;
+
     public function __construct(){
         $this->createDate = date('Y-m-d H:i:s');
+        $this->contentTypes = new ArrayCollection();
     }
 
     /**
@@ -137,5 +145,21 @@ abstract class Content
     public function setUser($user): void
     {
         $this->user = $user;
+    }
+
+    /**
+     * @return ArrayCollection | PersistentCollection
+     */
+    public function getContentTypes(): ArrayCollection
+    {
+        return $this->contentTypes;
+    }
+
+    /**
+     * @param ArrayCollection $contentTypes
+     */
+    public function setContentTypes(ArrayCollection $contentTypes): void
+    {
+        $this->contentTypes = $contentTypes;
     }
 }
