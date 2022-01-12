@@ -33,6 +33,18 @@ abstract class Content
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
+     */
+    protected $video;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
+     */
+    protected $slug;
+
+    /**
+     * @MongoDB\Field(type="string")
      * @Assert\Type(type="TextAreaType")
      */
     protected $content;
@@ -167,5 +179,37 @@ abstract class Content
             return;
         }
         $this->contentTypes->add($contentType);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVideo()
+    {
+        return $this->video;
+    }
+
+    /**
+     * @param mixed $video
+     */
+    public function setVideo($video): void
+    {
+        $this->video = $video;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     */
+    public function setSlug($slug): void
+    {
+        $this->slug = $slug;
     }
 }
