@@ -74,6 +74,17 @@ class DraftController extends AbstractController
         return $this->saveDraft($request, $draft);
     }
 
+    /**
+     * @Route("/{id}/testvalidate", name="draft_testval")
+     * @Method("GET")
+     */
+    public function testvalidate($id)
+    {
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+
+        return $this->saveDraft($draft->getContentValues(), $draft);
+    }
+
 
     /**
      * @Route("/{id}", name="draft_show")
@@ -226,8 +237,11 @@ class DraftController extends AbstractController
         }
     }
 
-    private function saveDraft(Request $request,Draft $draft){
-        $data = json_decode($request->getContent(), true);
+    private function saveDraft($request,Draft $draft){
+        $data = $request;
+        if ($request instanceof Request){
+            $data = json_decode($request->getContent(), true);
+        }
         $violations = $this->validateDraftRequest($data, $draft);
 
         $status = 200;
