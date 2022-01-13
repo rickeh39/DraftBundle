@@ -1,13 +1,8 @@
 const AutoSaver = (function() {
     let editorChangeHandlerId;
     let draft_id = '';
-    let isCreated = true;
 
     let saveCallbackFunction = null;
-
-    function _getDraftId(){
-        return draft_id;
-    }
 
     function _digestForm() {
         let jsonObj = {};
@@ -20,9 +15,6 @@ const AutoSaver = (function() {
 
     function _init(selector, did) {
         draft_id = did;
-        if (draft_id.length===0){
-            isCreated = false;
-        }
 
         tinymce.init({
             selector: selector,
@@ -47,9 +39,9 @@ const AutoSaver = (function() {
             saveCallbackFunction('Nu aan het opslaan');
         }
 
-
         let data = _digestForm();
-        data.content = content;
+        data.Content = content;
+        console.log('LOgje voor marloes: ', data);
 
         let options = {
             method: 'put',
@@ -61,26 +53,35 @@ const AutoSaver = (function() {
             body: JSON.stringify(data)
         };
 
-        let urlExtra = draft_id.length!==0 ? 'autosave/'+draft_id : 'firstautosave';
-
-        if ((draft_id.length>0) === isCreated){
-            isCreated=true;
-            fetch('/draft/'+urlExtra, options).then(_handleSaveResponse);
-        }
+        fetch('/draft/autosave/'+draft_id, options).then(_handleSaveResponse);
     }
 
     function _handleSaveResponse(response){
         if (response.status === 200){
             response.json().then(function (jsonResponse) {
-                if (jsonResponse.newDraftId!=null) {
-                    draft_id = jsonResponse.newDraftId;
-                }
                 if (saveCallbackFunction != null && jsonResponse.updatedAt != null){
                     saveCallbackFunction(jsonResponse.updatedAt);
                 }
-            })
+            });
         } else {
-            alert(response.status+" | "+response.statusText)
+            response.json().then(function (jsonResponse) {
+                console.log(jsonResponse);
+                Object.keys(jsonResponse.errors).forEach(function(key) {
+                    console.log(jsonResponse.errors[key], key);
+                    if (jsonResponse.errors[key].length>0){
+                        let input = document.getElementById('article_'+key);
+                        input.classList.add('border-2', 'border-danger');
+
+                        let p = document.createElement('p');
+                        let pstring = '';
+                        for (let i =0; i<jsonResponse.errors[key].length; i++){
+                            pstring += jsonResponse.errors[key][i]+'<br>';
+                        }
+                        p.innerHTML = pstring;
+                        input.parentNode.appendChild(p);
+                    }
+                });
+            });
         }
     }
 
@@ -91,7 +92,6 @@ const AutoSaver = (function() {
     return {
         init: _init,
         addSaveListener: _addSaveListener,
-        getDraftId: _getDraftId,
     }
 });
 

@@ -35,9 +35,10 @@ class ContentTypeController extends AbstractController
         $form = $this->createForm(ContentTypeType::class, $types);
 
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $draft = new Draft();
+
+            //dd($form['selectedItems']->getData());
             foreach ($form['selectedItems']->getData() as $contentType){
                 $draft->addContentTypes($contentType);
             }

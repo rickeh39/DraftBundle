@@ -31,9 +31,11 @@
             document.getElementById('lastAutoSaveLabel').innerHTML = saveMessage+".";
         }
 
-
+        let global_draftid;
         document.addEventListener('DOMContentLoaded', function () {
-            let draft_id = {% if id is defined %} '{{ id }}'; {% else %} ''; {% endif %}
+            global_draftid = {% if id is defined %} '{{ id }}'; {% else %} ''; {% endif %}
+            let draft_id = global_draftid;
+            console.log(draft_id);
             let autosaver = window.AutoSaver();
             autosaver.init('textarea#article_content', draft_id);
             autosaver.addSaveListener(updateSaveDateTime);

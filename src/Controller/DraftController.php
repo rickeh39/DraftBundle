@@ -16,6 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
+use Symfony\Component\Validator\Constraints as Constraints;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Validation;
+
 /**
  * @Route("/draft")
  */
@@ -67,20 +71,9 @@ class DraftController extends AbstractController
     public function autosave($id, Request $request)
     {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        $this->saveDraft($request,$draft);
-        return new JsonResponse(['updatedAt'=> $draft->getUpdatedAt()]);
+        return $this->saveDraft($request, $draft);
     }
-    /**
-     * @Route("/firstautosave", name="draft_autosave_first")
-     * @Method("PUT")
-     */
-    /*public function autosaveFirst(Request $request)
-    {
-        $draft = new Draft();
-        $draft->setUser(1);
-        $this->saveDraft($request,$draft);
-        return new JsonResponse(['newDraftId'=>$draft->getId(), 'updatedAt' => $draft->getUpdatedAt()]);
-    }*/
+
 
     /**
      * @Route("/{id}", name="draft_show")
@@ -111,9 +104,18 @@ class DraftController extends AbstractController
             }
         }*/
 
-        $form = $this->createForm(ArticleType::class, $draft);
+        $contentTypes = $draft->getContentTypes();
+
+        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+            'contentValues' => []];
+
+        $form = $this->createForm(ArticleType::class, $formoptions);
         $form->handleRequest($request);
-        $this->dm->persist($form->getData());
+
+        foreach ($form->getData()['contentTypes'] as $type){
+            $draft->addContentTypes($type);
+        }
+        $this->dm->persist($draft);
         $this->dm->flush();
 
         return $this->render('draft/edit.html.twig', array(
@@ -138,14 +140,21 @@ class DraftController extends AbstractController
                 $draft->setId($article->getId());
                 $draft->setArticle($article);
                 $article->setDraft($draft);
-            } else {
-                $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
             }
+            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+        }
+        else {
+            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         }
 
-        $form = $this->createForm(ArticleType::class, $draft);
+        $contentTypes = $draft->getContentTypes();
+
+        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+            'contentValues' => $draft->getContentValues()];
+
+        $form = $this->createForm(ArticleType::class, $formoptions);
         $form->handleRequest($request);
-        $this->dm->persist($form->getData());
+        $this->dm->persist($draft);
         $this->dm->flush();
 
         return $this->render('draft/edit.html.twig', array(
@@ -219,11 +228,53 @@ class DraftController extends AbstractController
 
     private function saveDraft(Request $request,Draft $draft){
         $data = json_decode($request->getContent(), true);
-        $draft->setTitle($data['title']);
-        $draft->setDescription($data['description']);
-        $draft->setContent($data['contentType']);
-        $draft->setUpdatedAt( date('d-m-Y H:i:s'));
-        $this->dm->persist($draft);
-        $this->dm->flush();
+        $violations = $this->validateDraftRequest($data, $draft);
+
+        $status = 200;
+        if (count($violations)===0){
+            $draft->setContentValues($data);
+            $this->dm->persist($draft);
+            $this->dm->flush();
+        } else {
+            $status = 400;
+        }
+
+        return new JsonResponse(['updatedAt'=> $draft->getUpdatedAt(), 'errors' => $violations], $status);
+    }
+
+    private function validateDraftRequest($data, $draft){
+        $types = $draft->getContentTypes()->getValues();
+        $allViolations = [];
+
+        $count = 0;
+        foreach ($types as $type){
+            $constraintViolations =
+                $this->validateDataItem($type->getTypeValidation(), $data[$type->getTypeName()]);
+            $count+=count($constraintViolations);
+            $allViolations[$type->getTypeName()] = $constraintViolations;
+        }
+        return $count === 0 ? [] : $allViolations;
+    }
+
+    private function validateDataItem($constraints, $data){
+        $validator = Validation::createValidator();
+
+        $convertedConstraints = array();
+        foreach ($constraints as $constraintName => $rules){
+            array_push($convertedConstraints, $this->objectToConstraint($constraintName, $rules));
+        }
+        $violations = $validator->validate($data, $convertedConstraints);
+
+        $violationsMessages = array();
+        foreach ($violations as $violation){
+            array_push($violationsMessages, $violation->getMessage());
+        }
+        return $violationsMessages;
+    }
+
+    private function objectToConstraint($constraintName, $rules){
+        $classname = 'Symfony\Component\Validator\Constraints\\'.$constraintName;
+        $constraintClass = new $classname($rules);
+        return $constraintClass;
     }
 }
