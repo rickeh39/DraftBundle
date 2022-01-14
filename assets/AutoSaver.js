@@ -97,7 +97,7 @@ const AutoSaver = (function() {
         if (response.status === 200){
             response.json().then(function (jsonResponse) {
                 if (saveCallbackFunction != null){
-                    saveCallbackFunction(jsonResponse.updatedAt.date.split('.')[0]);
+                    saveCallbackFunction(jsonResponse.updatedAt);
                 }
             });
         } else {

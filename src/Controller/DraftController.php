@@ -142,21 +142,21 @@ class DraftController extends AbstractController
     public function edit(Request $request, $id): Response
     {
         $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
-        $draft = null;
 
         if ($article != null) {
             if ($article->getDraft() == null) {
                 $draft = new Draft;
-                $this->oldToNewEntity($article, $draft);
+                $this->OldToNewDocument($article, $draft);
                 $draft->setId($article->getId());
                 $draft->setArticle($article);
                 $article->setDraft($draft);
+
+                $this->dm->persist($draft);
+                $this->dm->flush();
             }
-            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
         }
-        else {
-            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        }
+
+        $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
 
         $contentTypes = $draft->getContentTypes();
 
@@ -207,13 +207,11 @@ class DraftController extends AbstractController
             $article = new Article;
         }
 
-        $this->oldToNewEntity($draft, $article);
+        $this->OldToNewDocument($draft, $article);
 
         $article->setId($draft->getId());
         $article->setDraft(null);
         $article->addVersion($version);
-
-        $version->setContent($draft->getContent());
 
         $this->dm->persist($article);
         $this->dm->persist($version);
@@ -223,16 +221,16 @@ class DraftController extends AbstractController
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
-    private function oldToNewEntity($oldEntity, $newEntity){
-        $oldReflection = new ReflectionObject($oldEntity);
-        $newReflection = new ReflectionObject($newEntity);
+    private function OldToNewDocument($oldDocument, $newDocument){
+        $oldReflection = new ReflectionObject($oldDocument);
+        $newReflection = new ReflectionObject($newDocument);
 
         foreach ($oldReflection->getProperties() as $property) {
             if ($newReflection->hasProperty($property->getName())) {
                 $newProperty = $newReflection->getProperty($property->getName());
                 $newProperty->setAccessible(true);
                 $property->setAccessible(true);
-                $newProperty->setValue($newEntity, $property->getValue($oldEntity));
+                $newProperty->setValue($newDocument, $property->getValue($oldDocument));
             }
         }
     }
@@ -247,6 +245,7 @@ class DraftController extends AbstractController
         $status = 200;
         if (count($violations)===0){
             $draft->setContentValues($data);
+            $draft->setUpdatedAt(date('Y-m-d H:i:s'));
             $this->dm->persist($draft);
             $this->dm->flush();
         } else {

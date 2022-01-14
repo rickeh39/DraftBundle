@@ -4,24 +4,28 @@
 
 {% block body %}
     <div class="example-wrapper">
-        <h1>Titel van het artikel: {{ article.title }}</h1>
+        <h1>Id van het artikel: {{ article.id }}</h1>
 
         {% if article.versions[0] != version %}
-            Vorige versie:
+            <b>Vorige versie:</b>
             <ul>
                 {% for art_version in article.versions %}
                     {% if art_version.versionDate == version.versionDate %}
-                        <li> <b>Datum & tijd:</b> {{ article.versions[(loop.index - 2)].versionDate | date('d-m-Y H:m:s') }}</li>
-                        <li> <b>Content:</b> {{ article.versions[(loop.index - 2)].content ?? 'Geen content aanwezig' | raw }}</li>
+                        <li> Datum & tijd: {{ article.versions[(loop.index - 2)].versionDate | date('d-m-Y H:m:s') }}</li>
+                        <li> {% for key, value in article.contentValues %}
+                                {{ key }}: {{ value | raw }}<br>
+                            {% endfor %}</li>
                     {% endif %}
                 {% endfor %}
             </ul>
 
-            Nieuwste versie:
+            <b>Nieuwste versie:</b>
         {% endif %}
         <ul>
-            <li> <b>Datum & tijd:</b> {{ version.versionDate | date('d-m-Y H:m:s') }}</li>
-            <li> <b>Content:</b> {{ version.content ?? 'Geen content aanwezig' | raw }}</li>
+            <li> Datum & tijd: {{ version.versionDate | date('d-m-Y H:m:s') }}</li>
+            <li>{% for key, value in article.contentValues %}
+                    {{ key }}: {{ value | raw }}<br>
+                {% endfor %}</li>
         </ul>
 
     </div>

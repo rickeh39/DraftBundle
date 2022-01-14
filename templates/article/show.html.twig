@@ -58,7 +58,9 @@
         <div class="w-100 mt-3 pb-5">
             <div class="card border-0 bg-white">
                 <div class="card-body shadow-lg rounded-3">
-                    {{ article.content | raw }}
+                    {% for key, value in article.contentValues %}
+                        {{ key }}: {{ value | raw }}<br>
+                    {% endfor %}
                 </div>
             </div>
         </div>
