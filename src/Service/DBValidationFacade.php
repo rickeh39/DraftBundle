@@ -4,16 +4,16 @@ namespace App\Service;
 use Symfony\Component\Validator\Validation;
 
 class DBValidationFacade{
-    public function validateDraftRequest($data, $draft){
-        $types = $draft->getContentTypes()->getValues();
+    public function validateDraftRequest($data, DBValidationInterface $draft){
+        $types = $draft->getData();
         $allViolations = [];
 
         $count = 0;
-        foreach ($types as $type){
+        foreach ($types as $key => $type){
             $constraintViolations =
-                $this->validateDataItem($type->getTypeValidation(), $data[$type->getTypeName()]);
+                $this->validateDataItem($draft->getValidationRulesByType($key), $data[$draft->getTypeName($key)]);
             $count+=count($constraintViolations);
-            $allViolations[$type->getTypeName()] = $constraintViolations;
+            $allViolations[$draft->getTypeName($key)] = $constraintViolations;
         }
         return $count === 0 ? [] : $allViolations;
     }

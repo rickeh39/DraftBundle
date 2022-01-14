@@ -8,7 +8,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ArticleType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        //dd($options['data']);
         foreach ($options['data']['contentTypes'] as $item){
             if ($item->getTypeName() == 'Content'){
                 $builder->add('content',
