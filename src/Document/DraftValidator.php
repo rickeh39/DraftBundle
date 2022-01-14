@@ -14,7 +14,6 @@ class DraftValidator implements DBValidationInterface
 
     function getTypes()
     {
-        // TODO: Implement getTypes() method.
     }
 
     function getData()
