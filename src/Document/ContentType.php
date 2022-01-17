@@ -94,6 +94,4 @@ class ContentType
     {
         $this->typeValidation = $typeValidation;
     }
-
-
 }

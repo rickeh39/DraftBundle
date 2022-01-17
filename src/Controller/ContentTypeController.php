@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Document\ContentType;
 use App\Form\Type\ContentTypeType;
+use App\Service\ContentTypeGenerator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,8 +30,10 @@ class ContentTypeController extends AbstractController
      * @Route("/", name="contentType")
      * @Method("GET")
      */
-    public function index(Request $request): Response
+    public function index(Request $request, ContentTypeGenerator $contentGenerator): Response
     {
+        $contentGenerator->generate();
+
         $types = $this->dm->getRepository(ContentType::class)->findAll();
         $form = $this->createForm(ContentTypeType::class, $types);
 
@@ -38,7 +41,6 @@ class ContentTypeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $draft = new Draft();
 
-            //dd($form['selectedItems']->getData());
             foreach ($form['selectedItems']->getData() as $contentType){
                 $draft->addContentTypes($contentType);
             }
