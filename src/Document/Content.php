@@ -2,7 +2,12 @@
 
 namespace App\Document;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Doctrine\ODM\MongoDB\PersistentCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 /**
  * @MongoDB\Document
@@ -16,16 +21,31 @@ abstract class Content
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
      */
     protected $title;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
      */
     protected $description;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
+     */
+    protected $video;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextType")
+     */
+    protected $slug;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\Type(type="TextAreaType")
      */
     protected $content;
 
@@ -39,8 +59,14 @@ abstract class Content
      */
     protected $user;
 
+    /**
+     * @MongoDB\ReferenceMany(targetDocument=ContentType::class)
+     */
+    protected $contentTypes;
+
     public function __construct(){
         $this->createDate = date('Y-m-d H:i:s');
+        $this->contentTypes = new ArrayCollection();
     }
 
     /**
@@ -137,5 +163,53 @@ abstract class Content
     public function setUser($user): void
     {
         $this->user = $user;
+    }
+
+    /**
+     * @return ArrayCollection | PersistentCollection
+     */
+    public function getContentTypes()
+    {
+        return $this->contentTypes;
+    }
+
+    public function addContentTypes(ContentType $contentType)
+    {
+        if ($this->contentTypes->contains($contentType)){
+            return;
+        }
+        $this->contentTypes->add($contentType);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVideo()
+    {
+        return $this->video;
+    }
+
+    /**
+     * @param mixed $video
+     */
+    public function setVideo($video): void
+    {
+        $this->video = $video;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSlug()
+    {
+        return $this->slug;
+    }
+
+    /**
+     * @param mixed $slug
+     */
+    public function setSlug($slug): void
+    {
+        $this->slug = $slug;
     }
 }

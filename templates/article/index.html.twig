@@ -33,7 +33,7 @@
             <tbody>
             {% for article in articles %}
                 <tr>
-                    <td>{{ article.title }}{% if article.draft %} <b class="has-draft">&#33;</b>{% endif %}</td>
+                    <td>{{ article.id }}{% if article.draft %} <b class="has-draft">&#33;</b>{% endif %}</td>
                     <td>{{ article.createDate | date('d-m-Y H:i:s') }}</td>
                     <td>
                         <i class="fas fa-edit me-1"></i>
@@ -48,7 +48,7 @@
             </tbody>
         </table>
 
-        <a class="btn bg-primary" href="{{ path('draft_new') }}">
+        <a class="btn bg-primary" href="{{ path('contentType') }}">
             <i class="fas fa-plus-square me-1"></i> Nieuwe draft toevoegen
         </a>
     </div>
