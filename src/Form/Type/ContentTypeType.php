@@ -13,7 +13,7 @@ class ContentTypeType extends AbstractType {
     {
         $builder
             ->add('selectedItems', ChoiceType::class,[
-                'label' => 'Selecteer één of meerdere velden die je wil gebruiken:',
+                'label' => 'Selecteer de velden die je wil gebruiken:',
                 'attr' => ['data-draft-type' => 'title'],
                 'choices' => $options['data'],
                 'choice_label' => function(?ContentType $contentType) {
@@ -23,7 +23,7 @@ class ContentTypeType extends AbstractType {
                 'multiple' => true
             ])
             ->add('save', SubmitType::class, [
-                'label' => 'Doorgaan naar het aanmaken van het artikel',
+                'label' => 'Draft aanmaken',
                 'attr' => [
                     'class' => 'btn bg-primary mt-3'
                 ]
