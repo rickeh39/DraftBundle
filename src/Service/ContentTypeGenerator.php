@@ -23,7 +23,7 @@ class ContentTypeGenerator
         $newCollection = array(
             $this->setContentType('Title', 'TextType', []),
             $this->setContentType('Description', 'TextType', []),
-            $this->setContentType('Content', 'TextAreaType', []),
+            $this->setContentType('Content', 'TextareaType', []),
             $this->setContentType('Slug', 'TextType', [
                 'Length' => [
                     'min' => 4,
