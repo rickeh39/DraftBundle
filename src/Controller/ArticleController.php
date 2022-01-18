@@ -52,7 +52,6 @@ class ArticleController extends AbstractController
             $article->setDraft(null);
             $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
             $this->dm->remove($draft);
-
         }
         foreach ($article->getVersions() as $version) $this->dm->remove($version);
 

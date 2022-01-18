@@ -58,7 +58,7 @@ class DraftController extends AbstractController
      * @Route("/{id}/testvalidate", name="draft_testval")
      * @Method("GET")
      */
-    public function testvalidate($id)
+    public function testValidate($id)
     {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
 
@@ -83,10 +83,10 @@ class DraftController extends AbstractController
 
         $contentTypes = $draft->getContentTypes();
 
-        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+        $formOptions = ['contentTypes' => $contentTypes->getValues(),
             'contentValues' => []];
 
-        $form = $this->createForm(ArticleType::class, $formoptions);
+        $form = $this->createForm(ArticleType::class, $formOptions);
         $form->handleRequest($request);
 
         foreach ($form->getData()['contentTypes'] as $type){
@@ -113,10 +113,10 @@ class DraftController extends AbstractController
 
         $contentTypes = $draft->getContentTypes();
 
-        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+        $formOptions = ['contentTypes' => $contentTypes->getValues(),
             'contentValues' => $draft->getContentValues()];
 
-        $form = $this->createForm(ArticleType::class, $formoptions);
+        $form = $this->createForm(ArticleType::class, $formOptions);
         $form->handleRequest($request);
         $this->dm->persist($draft);
         $this->dm->flush();
@@ -160,7 +160,7 @@ class DraftController extends AbstractController
             $article = new Article;
         }
 
-        $this->OldToNewDocument($draft, $article);
+        $this->oldToNewDocument($draft, $article);
 
         $article->setId($draft->getId());
         $article->setDraft(null);
@@ -180,7 +180,7 @@ class DraftController extends AbstractController
         if ($article != null) {
             if ($article->getDraft() == null) {
                 $draft = new Draft;
-                $this->OldToNewDocument($article, $draft);
+                $this->oldToNewDocument($article, $draft);
                 $draft->setId($article->getId());
                 $draft->setArticle($article);
                 $article->setDraft($draft);
@@ -191,7 +191,7 @@ class DraftController extends AbstractController
         }
     }
 
-    private function OldToNewDocument($oldDocument, $newDocument){
+    private function oldToNewDocument($oldDocument, $newDocument){
         $oldReflection = new ReflectionObject($oldDocument);
         $newReflection = new ReflectionObject($newDocument);
 

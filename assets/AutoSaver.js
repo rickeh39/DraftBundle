@@ -1,6 +1,6 @@
 const AutoSaver = (function() {
     let draft_id = '';
-    let failresponse = '';
+    let failResponse = '';
     let saveCallbackFunction = null;
     let cooldown;
 
@@ -46,7 +46,7 @@ const AutoSaver = (function() {
 
     function _init(selector, did, fr, cd = 1000) {
         draft_id = did;
-        failresponse = fr;
+        failResponse = fr;
         cooldown = cd;
 
         tinymce.init({
@@ -120,7 +120,7 @@ const AutoSaver = (function() {
                     }
                 });
                 if (saveCallbackFunction != null){
-                    saveCallbackFunction(failresponse);
+                    saveCallbackFunction(failResponse);
                 }
             });
         }

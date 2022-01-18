@@ -20,7 +20,7 @@ class Version {
     protected $versionDate;
 
     /**
-     * @MongoDB\Field(type="string")
+     * @MongoDB\Field(type="hash")
      */
     protected $content;
 

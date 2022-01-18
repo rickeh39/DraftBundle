@@ -23,7 +23,7 @@ class DraftValidator implements DBValidationInterface
 
     function getValidationRulesByType($type)
     {
-        return $this->draft->getContentTypes()->getValues()[$type];
+        return $this->draft->getContentTypes()->getValues()[$type]->getTypeValidation();
     }
 
     function getTypeName($type)
