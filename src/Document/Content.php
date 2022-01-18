@@ -20,34 +20,9 @@ abstract class Content
     protected $id;
 
     /**
-     * @MongoDB\Field(type="string")
-     * @Assert\Type(type="TextType")
+     * @MongoDB\Field(type="hash")
      */
-    protected $title;
-
-    /**
-     * @MongoDB\Field(type="string")
-     * @Assert\Type(type="TextType")
-     */
-    protected $description;
-
-    /**
-     * @MongoDB\Field(type="string")
-     * @Assert\Type(type="TextType")
-     */
-    protected $video;
-
-    /**
-     * @MongoDB\Field(type="string")
-     * @Assert\Type(type="TextType")
-     */
-    protected $slug;
-
-    /**
-     * @MongoDB\Field(type="string")
-     * @Assert\Type(type="TextAreaType")
-     */
-    protected $content;
+    protected $contentValues;
 
     /**
      * @MongoDB\Field(type="date")
@@ -67,7 +42,25 @@ abstract class Content
     public function __construct(){
         $this->createDate = date('Y-m-d H:i:s');
         $this->contentTypes = new ArrayCollection();
+        //$this->contentValues = new ArrayCollection();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getContentValues()
+    {
+        return $this->contentValues;
+    }
+
+    /**
+     * @param mixed $contentValues
+     */
+    public function setContentValues($contentValues): void
+    {
+        $this->contentValues = $contentValues;
+    }
+
 
     /**
      * @return mixed
@@ -85,53 +78,6 @@ abstract class Content
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title): void
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * @param mixed $content
-     */
-    public function setContent($content): void
-    {
-        $this->content = $content;
-    }
 
     /**
      * @return mixed
@@ -179,37 +125,5 @@ abstract class Content
             return;
         }
         $this->contentTypes->add($contentType);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getVideo()
-    {
-        return $this->video;
-    }
-
-    /**
-     * @param mixed $video
-     */
-    public function setVideo($video): void
-    {
-        $this->video = $video;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * @param mixed $slug
-     */
-    public function setSlug($slug): void
-    {
-        $this->slug = $slug;
     }
 }

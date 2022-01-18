@@ -20,6 +20,18 @@ class ContentType
     protected $typeName;
 
     /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $typeFormBuild;
+
+
+    /**
+     * @MongoDB\Field(type="hash")
+     */
+    protected $typeValidation;
+
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -50,4 +62,38 @@ class ContentType
     {
         $this->typeName = $typeName;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTypeFormBuild()
+    {
+        return $this->typeFormBuild;
+    }
+
+    /**
+     * @param mixed $typeFormBuild
+     */
+    public function setTypeFormBuild($typeFormBuild): void
+    {
+        $this->typeFormBuild = $typeFormBuild;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTypeValidation()
+    {
+        return $this->typeValidation;
+    }
+
+    /**
+     * @param mixed $typeValidation
+     */
+    public function setTypeValidation($typeValidation): void
+    {
+        $this->typeValidation = $typeValidation;
+    }
+
+
 }

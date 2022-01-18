@@ -1,28 +1,35 @@
 <?php
 namespace App\Form\Type;
 
-use App\Document\Content;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ArticleType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        foreach ($options['data']->getContentTypes()->getValues() as $item){
+        //dd($options['data']);
+        foreach ($options['data']['contentTypes'] as $item){
             if ($item->getTypeName() == 'Content'){
-                $builder->add('content', TextareaType::class, [
+                $builder->add('content',
+                    'Symfony\Component\Form\Extension\Core\Type\\'.$item->getTypeFormBuild(), [
+                    'data' => $options['data']['contentValues'][$item->getTypeName()] ?? '',
                     'attr' => [
                         'class' => 'tinymce',
                         'rows' => 10,
                         'style' => 'width: 100%',
-                        'data-draft-type' => 'contentType'
+                        'data-draft-type' => $item->getTypeName()
                     ],
                 ]);
             } else {
                 $builder
-                    ->add($item->getTypeName());
+                    ->add($item->getTypeName(),
+                        'Symfony\Component\Form\Extension\Core\Type\\'.$item->getTypeFormBuild(),[
+                        'data' => $options['data']['contentValues'][$item->getTypeName()] ?? '',
+                        'attr' => [
+                            'data-draft-type' => $item->getTypeName(),
+                        ]
+                    ]);
             }
         }
 
@@ -31,7 +38,7 @@ class ArticleType extends AbstractType {
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Content::class,
+            'data_class' => null,
         ]);
     }
 }

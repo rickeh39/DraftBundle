@@ -22,7 +22,7 @@
         </div>
 
         <div>
-            <a class="btn bg-primary" href="{{ path('article_index') }}">Terug</a>
+            <a class="btn bg-primary" href="{{ path('draft_index') }}">Terug</a>
         </div>
     </div>
 
@@ -31,11 +31,12 @@
             document.getElementById('lastAutoSaveLabel').innerHTML = saveMessage+".";
         }
 
-
+        let global_draftid;
         document.addEventListener('DOMContentLoaded', function () {
-            let draft_id = {% if id is defined %} '{{ id }}'; {% else %} ''; {% endif %}
+            let draft_id = '{{ id }}';
             let autosaver = window.AutoSaver();
-            autosaver.init('textarea#article_content', draft_id);
+            autosaver.init('textarea#article_content', draft_id,
+                'Autosave GEFAALD door incorrecte invoer. Corrigeer de betreffende input');
             autosaver.addSaveListener(updateSaveDateTime);
         });
     </script>
