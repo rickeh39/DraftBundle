@@ -12,7 +12,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-
 /**
  * @Route("/contentType")
  */
@@ -38,7 +37,6 @@ class ContentTypeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $draft = new Draft();
 
-            //dd($form['selectedItems']->getData());
             foreach ($form['selectedItems']->getData() as $contentType){
                 $draft->addContentTypes($contentType);
             }

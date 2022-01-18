@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Document\Article;
 use App\Document\Draft;
+use App\Document\DraftValidator;
 use App\Document\Version;
 use App\Form\Type\ArticleType;
+use App\Service\DBValidationFacade;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use ReflectionObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +17,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-
 use Symfony\Component\Validator\Constraints as Constraints;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Validation;
@@ -26,10 +27,12 @@ use Symfony\Component\Validator\Validation;
 class DraftController extends AbstractController
 {
     private $dm;
+    private $val;
 
-    public function __construct(DocumentManager $dm)
+    public function __construct(DocumentManager $dm, DBValidationFacade $val)
     {
         $this->dm = $dm;
+        $this->val = $val;
     }
 
     /**
@@ -40,29 +43,6 @@ class DraftController extends AbstractController
         $drafts = $this->dm->getRepository(Draft::class)->findAll();
         return $this->render('draft/index.html.twig', ['drafts' => $drafts]);
     }
-
-    /**
-     * @Route("/new", name="draft_new")
-     */
-   /* public function new(Request $request)
-    {
-        $draft = new Draft();
-        $draft->setUser(1);
-
-        $form = $this->createForm(ArticleType::class, $draft);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->dm->persist($form->getData());
-            $this->dm->flush();
-            return $this->redirectToRoute('draft_show', ['id' => $draft->getId()]);
-        }
-
-        return $this->renderForm('draft/new.html.twig', [
-            'form' => $form,
-            'updatedAt' => $draft->getUpdatedAt()
-        ]);
-    }*/
 
     /**
      * @Route("/autosave/{id}", name="draft_autosave")
@@ -78,13 +58,12 @@ class DraftController extends AbstractController
      * @Route("/{id}/testvalidate", name="draft_testval")
      * @Method("GET")
      */
-    public function testvalidate($id)
+    public function testValidate($id)
     {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
 
         return $this->saveDraft($draft->getContentValues(), $draft);
     }
-
 
     /**
      * @Route("/{id}", name="draft_show")
@@ -101,26 +80,13 @@ class DraftController extends AbstractController
     public function createDraft(Request $request, $id): Response
     {
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-        //$draft = null;
-
-        /*if ($draft != null) {
-            if ($article->getDraft() == null) {
-                $draft = new Draft;
-                $this->oldToNewEntity($article, $draft);
-                $draft->setId($article->getId());
-                $draft->setArticle($article);
-                $article->setDraft($draft);
-            } else {
-                $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
-            }
-        }*/
 
         $contentTypes = $draft->getContentTypes();
 
-        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+        $formOptions = ['contentTypes' => $contentTypes->getValues(),
             'contentValues' => []];
 
-        $form = $this->createForm(ArticleType::class, $formoptions);
+        $form = $this->createForm(ArticleType::class, $formOptions);
         $form->handleRequest($request);
 
         foreach ($form->getData()['contentTypes'] as $type){
@@ -129,7 +95,7 @@ class DraftController extends AbstractController
         $this->dm->persist($draft);
         $this->dm->flush();
 
-        return $this->render('draft/edit.html.twig', array(
+        return $this->render('draft/new.html.twig', array(
             'form' => $form->createView(),
             'id' => $id,
             'updatedAt' => $draft->getUpdatedAt()
@@ -141,29 +107,16 @@ class DraftController extends AbstractController
      */
     public function edit(Request $request, $id): Response
     {
-        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
-
-        if ($article != null) {
-            if ($article->getDraft() == null) {
-                $draft = new Draft;
-                $this->OldToNewDocument($article, $draft);
-                $draft->setId($article->getId());
-                $draft->setArticle($article);
-                $article->setDraft($draft);
-
-                $this->dm->persist($draft);
-                $this->dm->flush();
-            }
-        }
+        $this->createDraftForArticle($id);
 
         $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
 
         $contentTypes = $draft->getContentTypes();
 
-        $formoptions = ['contentTypes' => $contentTypes->getValues(),
+        $formOptions = ['contentTypes' => $contentTypes->getValues(),
             'contentValues' => $draft->getContentValues()];
 
-        $form = $this->createForm(ArticleType::class, $formoptions);
+        $form = $this->createForm(ArticleType::class, $formOptions);
         $form->handleRequest($request);
         $this->dm->persist($draft);
         $this->dm->flush();
@@ -207,7 +160,7 @@ class DraftController extends AbstractController
             $article = new Article;
         }
 
-        $this->OldToNewDocument($draft, $article);
+        $this->oldToNewDocument($draft, $article);
 
         $article->setId($draft->getId());
         $article->setDraft(null);
@@ -221,7 +174,24 @@ class DraftController extends AbstractController
         return $this->redirectToRoute('article_show', ['id' => $article->getId()]);
     }
 
-    private function OldToNewDocument($oldDocument, $newDocument){
+    private function createDraftForArticle($id){
+        $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
+
+        if ($article != null) {
+            if ($article->getDraft() == null) {
+                $draft = new Draft;
+                $this->oldToNewDocument($article, $draft);
+                $draft->setId($article->getId());
+                $draft->setArticle($article);
+                $article->setDraft($draft);
+
+                $this->dm->persist($draft);
+                $this->dm->flush();
+            }
+        }
+    }
+
+    private function oldToNewDocument($oldDocument, $newDocument){
         $oldReflection = new ReflectionObject($oldDocument);
         $newReflection = new ReflectionObject($newDocument);
 
@@ -240,7 +210,8 @@ class DraftController extends AbstractController
         if ($request instanceof Request){
             $data = json_decode($request->getContent(), true);
         }
-        $violations = $this->validateDraftRequest($data, $draft);
+        $draftValidator = new DraftValidator($draft);
+        $violations = $this->val->validateDraftRequest($data, $draftValidator);
 
         $status = 200;
         if (count($violations)===0){
@@ -253,41 +224,5 @@ class DraftController extends AbstractController
         }
 
         return new JsonResponse(['updatedAt'=> $draft->getUpdatedAt(), 'errors' => $violations], $status);
-    }
-
-    private function validateDraftRequest($data, $draft){
-        $types = $draft->getContentTypes()->getValues();
-        $allViolations = [];
-
-        $count = 0;
-        foreach ($types as $type){
-            $constraintViolations =
-                $this->validateDataItem($type->getTypeValidation(), $data[$type->getTypeName()]);
-            $count+=count($constraintViolations);
-            $allViolations[$type->getTypeName()] = $constraintViolations;
-        }
-        return $count === 0 ? [] : $allViolations;
-    }
-
-    private function validateDataItem($constraints, $data){
-        $validator = Validation::createValidator();
-
-        $convertedConstraints = array();
-        foreach ($constraints as $constraintName => $rules){
-            array_push($convertedConstraints, $this->objectToConstraint($constraintName, $rules));
-        }
-        $violations = $validator->validate($data, $convertedConstraints);
-
-        $violationsMessages = array();
-        foreach ($violations as $violation){
-            array_push($violationsMessages, $violation->getMessage());
-        }
-        return $violationsMessages;
-    }
-
-    private function objectToConstraint($constraintName, $rules){
-        $classname = 'Symfony\Component\Validator\Constraints\\'.$constraintName;
-        $constraintClass = new $classname($rules);
-        return $constraintClass;
     }
 }

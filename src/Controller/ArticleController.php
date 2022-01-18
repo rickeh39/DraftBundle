@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Document\Article;
+use App\Document\Draft;
 use App\Document\Version;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,6 +47,13 @@ class ArticleController extends AbstractController
      */
     public function remove($id){
         $article = $this->dm->getRepository(Article::class)->findOneBy(['id' => $id]);
+
+        if($article->getDraft() != null){
+            $article->setDraft(null);
+            $draft = $this->dm->getRepository(Draft::class)->findOneBy(['id' => $id]);
+            $this->dm->remove($draft);
+        }
+        foreach ($article->getVersions() as $version) $this->dm->remove($version);
 
         $this->dm->remove($article);
         $this->dm->flush();
