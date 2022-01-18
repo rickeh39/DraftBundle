@@ -165,6 +165,7 @@ class DraftController extends AbstractController
         $article->setId($draft->getId());
         $article->setDraft(null);
         $article->addVersion($version);
+        $version->setContent($draft->getContentValues());
 
         $this->dm->persist($article);
         $this->dm->persist($version);

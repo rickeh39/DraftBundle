@@ -12,7 +12,7 @@
                 {% for art_version in article.versions %}
                     {% if art_version.versionDate == version.versionDate %}
                         <li> Datum & tijd: {{ article.versions[(loop.index - 2)].versionDate | date('d-m-Y H:m:s') }}</li>
-                        <li> {% for key, value in article.contentValues %}
+                        <li> {% for key, value in article.versions[(loop.index - 2)].content %}
                                 {{ key }}: {{ value | raw }}<br>
                             {% endfor %}</li>
                     {% endif %}
