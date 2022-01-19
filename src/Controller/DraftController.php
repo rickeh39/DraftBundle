@@ -7,7 +7,7 @@ use App\Document\Draft;
 use App\Document\DraftValidator;
 use App\Document\Version;
 use App\Form\Type\ArticleType;
-use App\Service\DBValidationFacade;
+use App\Service\DBValidationParser;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use ReflectionObject;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +29,7 @@ class DraftController extends AbstractController
     private $dm;
     private $val;
 
-    public function __construct(DocumentManager $dm, DBValidationFacade $val)
+    public function __construct(DocumentManager $dm, DBValidationParser $val)
     {
         $this->dm = $dm;
         $this->val = $val;

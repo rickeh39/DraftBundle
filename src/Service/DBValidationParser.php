@@ -3,7 +3,7 @@ namespace App\Service;
 
 use Symfony\Component\Validator\Validation;
 
-class DBValidationFacade{
+class DBValidationParser{
     public function validateDraftRequest($data, DBValidationInterface $draft){
         $types = $draft->getData();
         $allViolations = [];
