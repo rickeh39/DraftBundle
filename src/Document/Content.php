@@ -42,7 +42,6 @@ abstract class Content
     public function __construct(){
         $this->createDate = date('Y-m-d H:i:s');
         $this->contentTypes = new ArrayCollection();
-        //$this->contentValues = new ArrayCollection();
     }
 
     /**
