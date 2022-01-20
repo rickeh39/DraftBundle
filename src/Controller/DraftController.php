@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Document\Article;
 use App\Document\Draft;
-use App\Document\DraftValidator;
+use App\Document\DraftValidatorParser;
 use App\Document\Version;
 use App\Form\Type\ArticleType;
 use App\Service\DBValidationParser;
@@ -211,8 +211,8 @@ class DraftController extends AbstractController
         if ($request instanceof Request){
             $data = json_decode($request->getContent(), true);
         }
-        $draftValidator = new DraftValidator($draft);
-        $violations = $this->val->validateDraftRequest($data, $draftValidator);
+        $draftValidator = new DraftValidatorParser($draft);
+        $violations = $this->val->validateDynamicRequest($data, $draftValidator);
 
         $status = 200;
         if (count($violations)===0){
